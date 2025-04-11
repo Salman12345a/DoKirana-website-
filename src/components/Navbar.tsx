@@ -26,7 +26,7 @@ const Navbar = () => {
           <img 
             src="/lovable-uploads/438c0994-b4c5-4443-8ed0-a2a98758359f.png" 
             alt="DoKirana Logo" 
-            className="h-10 w-auto"
+            className="h-16 w-auto bg-dokirana-primary/10 p-2 rounded-lg" 
           />
         </Link>
         

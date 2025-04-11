@@ -10,7 +10,7 @@ const CTASection = () => {
             <img 
               src="/lovable-uploads/438c0994-b4c5-4443-8ed0-a2a98758359f.png" 
               alt="DoKirana Logo" 
-              className="h-16 w-auto"
+              className="h-24 w-auto bg-white/20 p-4 rounded-xl" 
             />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Shopping Experience?</h2>
