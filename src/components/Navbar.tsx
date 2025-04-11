@@ -24,7 +24,7 @@ const Navbar = () => {
       <div className="container-custom flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img 
-            src="/lovable-uploads/17273316-916c-435b-ba75-3f0989c2ef07.png" 
+            src="/lovable-uploads/438c0994-b4c5-4443-8ed0-a2a98758359f.png" 
             alt="DoKirana Logo" 
             className="h-10 w-auto"
           />
