@@ -1,4 +1,3 @@
-
 import { CheckCircle } from 'lucide-react';
 
 const Features = () => {
@@ -35,9 +34,9 @@ const Features = () => {
           <div className="bg-dokirana-lighter p-8 rounded-xl animate-fade-in">
             <div className="flex items-center justify-center mb-8">
               <img 
-                src="/lovable-uploads/fb48dfd0-69fe-4e9b-b085-d8a0cce0f63f.png" 
+                src="/lovable-uploads/cutomer.png" 
                 alt="Customer App Interface" 
-                className="max-w-full h-auto rounded-lg shadow-md"
+                className="w-[280px] h-auto rounded-lg shadow-md object-contain"
               />
             </div>
             <h3 className="text-2xl font-semibold text-dokirana-primary text-center mb-6">For Customers</h3>
@@ -55,9 +54,9 @@ const Features = () => {
           <div className="bg-dokirana-lighter p-8 rounded-xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <div className="flex items-center justify-center mb-8">
               <img 
-                src="/lovable-uploads/896ffabb-96c9-4710-b03b-867e60339335.png" 
+                src="/lovable-uploads/kirana.png" 
                 alt="Store Owner App Interface" 
-                className="max-w-full h-auto rounded-lg shadow-md"
+                className="w-[280px] h-auto rounded-lg shadow-md object-contain"
               />
             </div>
             <h3 className="text-2xl font-semibold text-dokirana-primary text-center mb-6">For Store Owners</h3>
