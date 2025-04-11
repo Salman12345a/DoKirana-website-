@@ -50,7 +50,7 @@ const AppDownload = () => {
             <div className="relative">
               <div className="absolute -inset-2 bg-white/30 rounded-full blur-3xl"></div>
               <img 
-                src="/lovable-uploads/37abd8ca-0091-4d78-be64-0469d0676335.png" 
+                src="/lovable-uploads/phone.png" 
                 alt="DoKirana App Screenshots" 
                 className="relative z-10 max-w-full h-auto rounded-3xl shadow-xl"
               />
