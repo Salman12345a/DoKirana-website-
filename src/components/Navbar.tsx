@@ -24,7 +24,11 @@ const Navbar = () => {
     <nav className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container-custom flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold text-dokirana-primary">DoKirana</span>
+          <img 
+            src="/lovable-uploads/17273316-916c-435b-ba75-3f0989c2ef07.png" 
+            alt="DoKirana Logo" 
+            className="h-10 w-auto"
+          />
         </Link>
         
         {/* Desktop Menu */}

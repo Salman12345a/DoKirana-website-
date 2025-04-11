@@ -29,7 +29,7 @@ const Hero = () => {
             <div className="relative">
               <div className="absolute -inset-1 bg-dokirana-primary/20 rounded-full blur-3xl"></div>
               <img 
-                src="/lovable-uploads/afca662e-c634-421e-9dfa-6dc811cad5e9.png" 
+                src="/lovable-uploads/8d3fda97-ba38-42cc-9ea5-1ae1c2bb0a2f.png" 
                 alt="DoKirana App Interface" 
                 className="relative z-10 max-w-full h-auto rounded-3xl shadow-xl"
               />
