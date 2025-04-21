@@ -46,7 +46,7 @@ const StoreOwners = () => {
           
           <div className="order-1 lg:order-2 flex justify-center">
             <img 
-              src="/lovable-uploads/896ffabb-96c9-4710-b03b-867e60339335.png" 
+              src="/lovable-uploads/branch.png" 
               alt="DoKirana Store Partner App" 
               className="max-w-full h-auto rounded-lg shadow-xl"
             />

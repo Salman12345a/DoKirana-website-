@@ -7,21 +7,21 @@ import { Award, ChevronRight, Heart, Sparkles, Target, Users } from "lucide-reac
 const About = () => {
   const team = [
     {
-      name: "Rahul Sharma",
+      name: "Syed Salman",
       role: "Founder & CEO",
-      bio: "Rahul founded DoKirana with a vision to bridge the gap between traditional Kirana stores and digital convenience.",
+      bio: "Salman founded DoKirana with a vision to bridge the gap between traditional Kirana stores and digital convenience.",
       image: "/lovable-uploads/a0d0b563-7fb6-4a6d-be40-4bc9358a403c.png"
     },
     {
-      name: "Priya Patel",
+      name: "Syed Rubina",
       role: "Chief Operating Officer",
-      bio: "Priya oversees operations and ensures our platform delivers seamless experiences for both customers and store owners.",
+      bio: "Rubina oversees operations and ensures our platform delivers seamless experiences for both customers and store owners.",
       image: "/lovable-uploads/a0d0b563-7fb6-4a6d-be40-4bc9358a403c.png"
     },
     {
-      name: "Vikram Singh",
+      name: "Amrit Matheparty ",
       role: "Head of Technology",
-      bio: "Vikram leads our tech team, developing innovative solutions to connect local stores with digital shoppers.",
+      bio: "Amrit  leads our tech team, developing innovative solutions to connect local stores with digital shoppers.",
       image: "/lovable-uploads/a0d0b563-7fb6-4a6d-be40-4bc9358a403c.png"
     },
     {
@@ -71,7 +71,7 @@ const About = () => {
               
               <div className="flex justify-center">
                 <img 
-                  src="/lovable-uploads/afca662e-c634-421e-9dfa-6dc811cad5e9.png" 
+                  src="/lovable-uploads/about.png" 
                   alt="DoKirana Story" 
                   className="max-w-full h-auto rounded-lg shadow-lg"
                 />

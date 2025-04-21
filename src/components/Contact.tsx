@@ -52,7 +52,7 @@ const Contact = () => {
                 <MapPin className="mr-4 mt-1 flex-shrink-0" size={24} />
                 <div>
                   <h4 className="font-medium">Our Location</h4>
-                  <p className="text-white/80 mt-1">123 Main Street, City Center, State, Country - 10001</p>
+                  <p className="text-white/80 mt-1">2-4-1113/75/A Nimboli adda,Kachiguda Hyderabad, Telangana, India - 500027</p>
                 </div>
               </div>
               
@@ -60,7 +60,7 @@ const Contact = () => {
                 <Phone className="mr-4 mt-1 flex-shrink-0" size={24} />
                 <div>
                   <h4 className="font-medium">Phone Number</h4>
-                  <p className="text-white/80 mt-1">+91 98765 43210</p>
+                  <p className="text-white/80 mt-1">+91 8121700697</p>
                 </div>
               </div>
               
@@ -68,7 +68,7 @@ const Contact = () => {
                 <Mail className="mr-4 mt-1 flex-shrink-0" size={24} />
                 <div>
                   <h4 className="font-medium">Email Address</h4>
-                  <p className="text-white/80 mt-1">support@dokirana.com</p>
+                  <p className="text-white/80 mt-1">syedsalman186org@gmail.com</p>
                 </div>
               </div>
             </div>

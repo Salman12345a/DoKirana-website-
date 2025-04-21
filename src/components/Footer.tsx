@@ -1,25 +1,21 @@
-
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Youtube } from 'lucide-react';
 
 const Footer = () => {
   return (
     <footer className="bg-dokirana-primary text-white pt-16 pb-8">
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="text-xl font-bold mb-4">DoKirana</h3>
             <p className="mb-6">Your neighborhood Kirana stores, now in your pocket. Connecting customers with local stores for convenient shopping with a community touch.</p>
             <div className="flex space-x-4">
-              <a href="https://facebook.com" className="hover:text-dokirana-light transition-colors" aria-label="Facebook">
-                <Facebook size={20} />
-              </a>
-              <a href="https://twitter.com" className="hover:text-dokirana-light transition-colors" aria-label="Twitter">
-                <Twitter size={20} />
-              </a>
-              <a href="https://instagram.com" className="hover:text-dokirana-light transition-colors" aria-label="Instagram">
+              <a href="https://www.instagram.com/dokirana186org?utm_source=qr&igsh=dGs2M2llb2I1ZW5l" className="hover:text-dokirana-light transition-colors" aria-label="Instagram">
                 <Instagram size={20} />
+              </a>
+              <a href="https://youtube.com/@DoKirana186org" className="hover:text-dokirana-light transition-colors" aria-label="YouTube">
+                <Youtube size={24} />
               </a>
             </div>
           </div>
@@ -44,6 +40,8 @@ const Footer = () => {
               <li><a href="#partner-benefits" className="hover:text-dokirana-light transition-colors">Partner Benefits</a></li>
               <li><a href="#store-app" className="hover:text-dokirana-light transition-colors">Store App</a></li>
               <li><a href="#success-stories" className="hover:text-dokirana-light transition-colors">Success Stories</a></li>
+              <li><Link to="/branch/privacy-policy" className="hover:text-dokirana-light transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/branch/terms" className="hover:text-dokirana-light transition-colors">Terms & Conditions</Link></li>
             </ul>
           </div>
           
@@ -53,22 +51,29 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin size={20} className="mr-2 mt-1 flex-shrink-0" />
-                <span>123 Main Street, City Center, State, Country - 10001</span>
+                <span>2-4-1113/75/A Nimboli adda, Kachiguda Hyderabad, Telangana, India - 500027</span>
               </li>
               <li className="flex items-center">
                 <Phone size={20} className="mr-2 flex-shrink-0" />
-                <span>+91 98765 43210</span>
+                <span>+91 8121700697</span>
               </li>
               <li className="flex items-center">
                 <Mail size={20} className="mr-2 flex-shrink-0" />
-                <span>support@dokirana.com</span>
+                <span>syedsalman186org@gmail.com</span>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="border-t border-gray-700 mt-12 pt-8 text-center">
-          <p>&copy; {new Date().getFullYear()} DoKirana. All rights reserved.</p>
+        <div className="border-t border-gray-700 mt-12 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p>&copy; {new Date().getFullYear()} DoKirana. All rights reserved.</p>
+            <div className="flex space-x-4 mt-4 md:mt-0">
+              <Link to="/branch/privacy-policy" className="hover:text-dokirana-light transition-colors text-sm">Branch Privacy Policy</Link>
+              <span className="text-gray-500">|</span>
+              <Link to="/branch/terms" className="hover:text-dokirana-light transition-colors text-sm">Branch Terms</Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
