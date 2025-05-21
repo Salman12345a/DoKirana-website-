@@ -12,6 +12,8 @@ import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 import BranchPrivacyPolicy from "./pages/BranchPrivacyPolicy";
 import BranchTerms from "./pages/BranchTerms";
+import CancellationsAndRefunds from "./pages/CancellationsAndRefunds";
+import ShippingPolicy from "./pages/ShippingPolicy";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/blog" element={<Blog />} />
           <Route path="/branch/privacy-policy" element={<BranchPrivacyPolicy />} />
           <Route path="/branch/terms" element={<BranchTerms />} />
+          <Route path="/cancellations-and-refunds" element={<CancellationsAndRefunds />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

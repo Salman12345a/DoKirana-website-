@@ -42,6 +42,8 @@ const Footer = () => {
               <li><a href="#success-stories" className="hover:text-dokirana-light transition-colors">Success Stories</a></li>
               <li><Link to="/branch/privacy-policy" className="hover:text-dokirana-light transition-colors">Privacy Policy</Link></li>
               <li><Link to="/branch/terms" className="hover:text-dokirana-light transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/cancellations-and-refunds" className="hover:text-dokirana-light transition-colors">Cancellations & Refunds</Link></li>
+              <li><Link to="/shipping-policy" className="hover:text-dokirana-light transition-colors">Shipping Policy</Link></li>
             </ul>
           </div>
           
@@ -68,10 +70,14 @@ const Footer = () => {
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p>&copy; {new Date().getFullYear()} DoKirana. All rights reserved.</p>
-            <div className="flex space-x-4 mt-4 md:mt-0">
+            <div className="flex flex-wrap space-x-4 mt-4 md:mt-0">
               <Link to="/branch/privacy-policy" className="hover:text-dokirana-light transition-colors text-sm">Branch Privacy Policy</Link>
               <span className="text-gray-500">|</span>
               <Link to="/branch/terms" className="hover:text-dokirana-light transition-colors text-sm">Branch Terms</Link>
+              <span className="text-gray-500">|</span>
+              <Link to="/cancellations-and-refunds" className="hover:text-dokirana-light transition-colors text-sm">Cancellations & Refunds</Link>
+              <span className="text-gray-500">|</span>
+              <Link to="/shipping-policy" className="hover:text-dokirana-light transition-colors text-sm">Shipping Policy</Link>
             </div>
           </div>
         </div>
