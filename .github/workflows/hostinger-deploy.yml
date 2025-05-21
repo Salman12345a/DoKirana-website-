@@ -34,4 +34,4 @@ jobs:
           port: 21
           timeout: 60000
           local-dir: ./dist/
-          server-dir: /public_html/
+          server-dir: /domains/dokirana.com/public_html/public_html/
