@@ -30,8 +30,5 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          timeout: 60000
           local-dir: ./dist/
-          server-dir: /domains/dokirana.com/public_html/public_html/
+          server-dir: /public_html
