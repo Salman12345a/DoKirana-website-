@@ -34,23 +34,23 @@ const FAQ = () => {
     },
     {
       question: "Is there a minimum order value?",
-      answer: "Minimum order values vary by store. Each Kirana store on our platform sets their own minimum order requirement, which you can see when browsing the store's products."
+      answer: "There is no restriction on minimum order value. You can order any amount through DoKirana."
     },
     {
       question: "How quickly will I receive my order?",
-      answer: "Delivery times depend on the store's location, your delivery address, and current demand. Typically, orders are delivered within 1-3 hours, with some stores offering express delivery options."
+      answer: "Your order will be delivered within 30 minutes of placing the order."
     },
     {
       question: "What payment methods are accepted?",
-      answer: "DoKirana accepts various payment methods including credit/debit cards, UPI, mobile wallets, and cash on delivery, depending on the store's preferences."
+      answer: "As for now, DoKirana accepts only cash on delivery payment method."
     },
     {
-      question: "How can I join DoKirana as a store owner?",
-      answer: "To join as a store owner, download the DoKirana Partner app, complete the registration process, upload the required documents, and our team will contact you for verification and onboarding."
+      question: "How can I join DoKirana as a branch?",
+      answer: "To join as a DoKirana branch, download the dkbranch app from the PlayStore or contact us at +918121700697."
     },
     {
       question: "Is there a fee for using DoKirana?",
-      answer: "For customers, the app is free to download and use. A small delivery fee may apply depending on your location. For store owners, we charge a small commission on orders received through our platform."
+      answer: "There is only a one rupee fee for each order if the order value is within 1000 rupees. The fee increases by one rupee for every 1000 rupees exceeded in each order."
     }
   ];
 

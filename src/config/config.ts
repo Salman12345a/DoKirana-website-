@@ -24,6 +24,9 @@ const config = {
     },
     admin: {
       updateBranchStatus: '/api/admin/branch/{branchId}/status',
+    },
+    affiliate: {
+      products: '/api/affiliate/products',
     }
   },
   

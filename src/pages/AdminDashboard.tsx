@@ -61,6 +61,27 @@ interface Branch {
   address: BranchAddress;
 }
 
+interface AffiliateProduct {
+  _id: string;
+  name: string;
+  imageUrl: string;
+  affiliateLink: string;
+  isActive: boolean;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+interface AffiliateProductsResponse {
+  status: string;
+  data: {
+    total: number;
+    count: number;
+    affiliateProducts: AffiliateProduct[];
+  };
+}
+
 interface BranchResponse {
   status: string;
   message: string;
@@ -75,7 +96,7 @@ const AdminDashboard = () => {
   const [adminData, setAdminData] = useState<AdminData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [currentView, setCurrentView] = useState<'dashboard' | 'branchApproval' | 'branchDetails'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'branchApproval' | 'branchDetails' | 'affiliatesDashboard'>('dashboard');
   
   // Branch approval states
   const [branchPhone, setBranchPhone] = useState('');
@@ -84,6 +105,11 @@ const AdminDashboard = () => {
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [verificationError, setVerificationError] = useState('');
   const [branchDetails, setBranchDetails] = useState<Branch | null>(null);
+  
+  // Affiliate products state
+  const [affiliateProducts, setAffiliateProducts] = useState<AffiliateProduct[]>([]);
+  const [isLoadingAffiliateProducts, setIsLoadingAffiliateProducts] = useState(false);
+  const [affiliateProductsError, setAffiliateProductsError] = useState('');
   
   const navigate = useNavigate();
 
@@ -646,6 +672,157 @@ const AdminDashboard = () => {
     );
   }
 
+  const fetchAffiliateProducts = async () => {
+    setIsLoadingAffiliateProducts(true);
+    setAffiliateProductsError('');
+    
+    try {
+      // Check authentication
+      const accessToken = localStorage.getItem(config.auth.tokenStorageKey);
+      
+      if (!accessToken) {
+        navigate('/admin/login');
+        return;
+      }
+      
+      // Use mock data if feature flag is on
+      if (USE_MOCK_DATA) {
+        // Mock affiliate products data
+        const mockAffiliateProducts = [
+          {
+            _id: '6831d57ae6afc9a89397c5e3',
+            name: 'Dry Season Scented Candles',
+            imageUrl: 'https://dokirana-affiliate-bucket.s3.ap-south-1.amazonaws.com/third/affiliate-products/6831d4c0e6afc9a89397c5e2.jpg',
+            affiliateLink: 'https://amzn.to/4mwJar4',
+            isActive: true,
+            createdBy: '6737ab0a645a90de3fbb1a',
+            createdAt: '2025-05-24T14:19:38.842Z',
+            updatedAt: '2025-05-24T14:19:38.842Z',
+            __v: 0
+          },
+          {
+            _id: '6831c561471eeba0289efq6',
+            name: 'Aromatherapy Diffuser',
+            imageUrl: 'https://dokirana-affiliate-bucket.s3.ap-south-1.amazonaws.com/third/affiliate-products/6831c7e1472ebb289efq7.jpg',
+            affiliateLink: 'https://amzn.to/3b2Kxyz',
+            isActive: true,
+            createdBy: '6737ab0a645a90de3fbb1a',
+            createdAt: '2025-05-24T13:45:22.123Z',
+            updatedAt: '2025-05-24T13:45:22.123Z',
+            __v: 0
+          }
+        ];
+        
+        setAffiliateProducts(mockAffiliateProducts);
+        setIsLoadingAffiliateProducts(false);
+        return;
+      }
+      
+      // Fetch affiliate products from API
+      const response = await fetch(`${config.api.baseUrl}${config.api.affiliate.products}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Unauthorized, redirect to login
+          localStorage.removeItem(config.auth.tokenStorageKey);
+          localStorage.removeItem(config.auth.tokenExpiryKey);
+          navigate('/admin/login');
+          return;
+        }
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      const data: AffiliateProductsResponse = await response.json();
+      
+      if (data.status === 'success' && data.data.affiliateProducts) {
+        setAffiliateProducts(data.data.affiliateProducts);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Error fetching affiliate products:', error);
+      setAffiliateProductsError('Failed to load affiliate products. Please try again later.');
+    } finally {
+      setIsLoadingAffiliateProducts(false);
+    }
+  };
+  
+  const renderAffiliatesDashboardView = () => {
+    return (
+      <>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Affiliate Products Dashboard</h2>
+          <button
+            onClick={() => setCurrentView('dashboard')}
+            className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+        
+        {isLoadingAffiliateProducts ? (
+          <div className="bg-white rounded-lg shadow-md p-6 flex items-center justify-center h-64">
+            <p className="text-gray-600">Loading affiliate products...</p>
+          </div>
+        ) : affiliateProductsError ? (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {affiliateProductsError}
+            </div>
+            <button
+              onClick={fetchAffiliateProducts}
+              className="bg-dokirana-primary text-white py-2 px-4 rounded-md hover:bg-dokirana-secondary transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : affiliateProducts.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-md p-6 text-center py-12">
+            <p className="text-gray-600 mb-4">No affiliate products found.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {affiliateProducts.map((product) => (
+              <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src={product.imageUrl} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                  <div className="flex justify-between items-center mb-3">
+                    <span className={`px-2 py-1 rounded-full text-xs ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {product.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      Created: {new Date(product.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <a 
+                    href={product.affiliateLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="block w-full bg-dokirana-primary text-white text-center py-2 px-4 rounded-md hover:bg-dokirana-secondary transition-colors"
+                  >
+                    Visit Affiliate Link
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  };
+  
   const renderDashboardView = () => {
     return (
       <>
@@ -699,6 +876,15 @@ const AdminDashboard = () => {
             >
               Approve Branch
             </button>
+            <button
+              onClick={() => {
+                fetchAffiliateProducts();
+                setCurrentView('affiliatesDashboard');
+              }}
+              className="w-full bg-dokirana-primary text-white py-2 px-4 rounded-md hover:bg-dokirana-secondary transition-colors"
+            >
+              Affiliate Management
+            </button>
           </div>
         </div>
       </>
@@ -723,6 +909,7 @@ const AdminDashboard = () => {
         {currentView === 'dashboard' && renderDashboardView()}
         {currentView === 'branchApproval' && renderBranchApprovalView()}
         {currentView === 'branchDetails' && renderBranchDetailsView()}
+        {currentView === 'affiliatesDashboard' && renderAffiliatesDashboardView()}
       </main>
     </div>
   );
