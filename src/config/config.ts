@@ -27,6 +27,10 @@ const config = {
     },
     affiliate: {
       products: '/api/affiliate/products',
+      uploadUrl: '/api/affiliate/upload-url',
+      createProduct: '/api/affiliate/products',
+      updateProduct: '/api/affiliate/products/{productId}',
+      deleteProduct: '/api/affiliate/products/{productId}',
     }
   },
   

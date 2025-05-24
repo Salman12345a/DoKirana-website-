@@ -16,6 +16,7 @@ import CancellationsAndRefunds from "./pages/CancellationsAndRefunds";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import CreateAffiliateProduct from "./pages/CreateAffiliateProduct";
 import AuthGuard from "./components/AuthGuard";
 import { useEffect } from "react";
 import config from "./config/config";
@@ -65,6 +66,7 @@ const App = () => (
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/create-affiliate-product" element={<AdminRoute><CreateAffiliateProduct /></AdminRoute>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

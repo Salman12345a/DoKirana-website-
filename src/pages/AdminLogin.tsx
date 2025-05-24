@@ -82,8 +82,9 @@ const AdminLogin = () => {
       // Simulate API delay
       setTimeout(() => {
         try {
-          // Store tokens from mock data
+          // Store tokens and admin data from mock data
           localStorage.setItem(config.auth.tokenStorageKey, MOCK_LOGIN_RESPONSE.data.accessToken);
+          localStorage.setItem('adminData', JSON.stringify(MOCK_LOGIN_RESPONSE.data.admin));
           
           // Set expiry based on rememberMe setting
           const expiryDate = new Date();
@@ -133,8 +134,9 @@ const AdminLogin = () => {
           const tokenPreview = data.data.accessToken.substring(0, 15) + '...';
           console.log('Received token (preview):', tokenPreview);
           
-          // Store tokens
+          // Store tokens and admin data
           localStorage.setItem(config.auth.tokenStorageKey, data.data.accessToken);
+          localStorage.setItem('adminData', JSON.stringify(data.data.admin));
           
           // Set expiry based on rememberMe setting
           const expiryDate = new Date();
@@ -174,6 +176,7 @@ const AdminLogin = () => {
         // If API is not available, use mock login as fallback for testing
         console.log('API unavailable, falling back to mock login');
         localStorage.setItem(config.auth.tokenStorageKey, MOCK_LOGIN_RESPONSE.data.accessToken);
+        localStorage.setItem('adminData', JSON.stringify(MOCK_LOGIN_RESPONSE.data.admin));
         
         if (rememberMe) {
           const expiryDate = new Date();

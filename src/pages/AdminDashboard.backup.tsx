@@ -82,7 +82,7 @@ const AdminDashboard = () => {
   const [adminData, setAdminData] = useState<AdminData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [currentView, setCurrentView] = useState<'dashboard' | 'branchApproval' | 'branchDetails' | 'affiliatesDashboard' | 'inactiveAffiliateProducts'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'branchApproval' | 'branchDetails' | 'affiliatesDashboard'>('dashboard');
   
   // Branch approval states
   const [branchPhone, setBranchPhone] = useState('');
@@ -93,8 +93,7 @@ const AdminDashboard = () => {
   const [branchDetails, setBranchDetails] = useState<Branch | null>(null);
   
   // Affiliate products state
-  const [activeAffiliateProducts, setActiveAffiliateProducts] = useState<AffiliateProduct[]>([]);
-  const [inactiveAffiliateProducts, setInactiveAffiliateProducts] = useState<AffiliateProduct[]>([]);
+  const [affiliateProducts, setAffiliateProducts] = useState<AffiliateProduct[]>([]);
   const [isLoadingAffiliateProducts, setIsLoadingAffiliateProducts] = useState(false);
   const [affiliateProductsError, setAffiliateProductsError] = useState('');
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
@@ -717,46 +716,10 @@ const AdminDashboard = () => {
   
   // Handle successful product update
   const handleProductUpdated = (updatedProduct: AffiliateProduct) => {
-    // Update the appropriate products list based on product status
-    if (updatedProduct.isActive) {
-      // Check if the product was inactive before and is now active
-      const wasInInactiveList = inactiveAffiliateProducts.some(p => p._id === updatedProduct._id);
-      
-      if (wasInInactiveList) {
-        // Remove from inactive list
-        setInactiveAffiliateProducts(prev => 
-          prev.filter(p => p._id !== updatedProduct._id)
-        );
-        // Add to active list
-        setActiveAffiliateProducts(prev => [...prev, updatedProduct]);
-      } else {
-        // Just update in active list
-        setActiveAffiliateProducts(prev => 
-          prev.map(p => p._id === updatedProduct._id ? updatedProduct : p)
-        );
-      }
-    } else {
-      // Product is now inactive
-      // Check if the product was active before and is now inactive
-      const wasInActiveList = activeAffiliateProducts.some(p => p._id === updatedProduct._id);
-      
-      if (wasInActiveList) {
-        // Remove from active list
-        setActiveAffiliateProducts(prev => 
-          prev.filter(p => p._id !== updatedProduct._id)
-        );
-        // Add to inactive list
-        setInactiveAffiliateProducts(prev => [...prev, updatedProduct]);
-      } else {
-        // Just update in inactive list
-        setInactiveAffiliateProducts(prev => 
-          prev.map(p => p._id === updatedProduct._id ? updatedProduct : p)
-        );
-      }
-    }
-    
-    setEditModalOpen(false);
-    setProductToEdit(null);
+    // Update the product in the local state
+    setAffiliateProducts(prevProducts => 
+      prevProducts.map(p => p._id === updatedProduct._id ? updatedProduct : p)
+    );
   };
   
   // Handle deleting a product
@@ -775,27 +738,12 @@ const AdminDashboard = () => {
       // Use the affiliate service to delete (deactivate) the product
       const deactivatedProduct = await affiliateService.deleteProduct(productToDelete._id);
       
-      // Remove from active products list
-      setActiveAffiliateProducts(prevProducts => 
-        prevProducts.filter(p => p._id !== deactivatedProduct._id)
+      // Update the product in the local state
+      setAffiliateProducts(prevProducts => 
+        prevProducts.map(p => p._id === deactivatedProduct._id ? deactivatedProduct : p)
       );
       
-      // Add to inactive products list
-      setInactiveAffiliateProducts(prevProducts => {
-        // Check if product already exists in inactive list
-        const exists = prevProducts.some(p => p._id === deactivatedProduct._id);
-        
-        if (exists) {
-          // Update it
-          return prevProducts.map(p => p._id === deactivatedProduct._id ? deactivatedProduct : p);
-        } else {
-          // Add it
-          return [...prevProducts, deactivatedProduct];
-        }
-      });
-      
       setDeleteDialogOpen(false);
-      setProductToDelete(null);
     } catch (error) {
       console.error('Error deleting product:', error);
       
@@ -818,13 +766,7 @@ const AdminDashboard = () => {
     try {
       // Use the affiliate service to get products
       const products = await affiliateService.getProducts();
-      
-      // Separate active and inactive products
-      const active = products.filter(product => product.isActive);
-      const inactive = products.filter(product => !product.isActive);
-      
-      setActiveAffiliateProducts(active);
-      setInactiveAffiliateProducts(inactive);
+      setAffiliateProducts(products);
     } catch (error) {
       console.error('Error fetching affiliate products:', error);
       // Handle unauthorized error
@@ -844,7 +786,7 @@ const AdminDashboard = () => {
     return (
       <>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Active Affiliate Products</h2>
+          <h2 className="text-xl font-semibold">Affiliate Products Dashboard</h2>
           <div className="flex space-x-2">
             <button
               onClick={fetchUploadUrl}
@@ -878,13 +820,13 @@ const AdminDashboard = () => {
               Try Again
             </button>
           </div>
-        ) : activeAffiliateProducts.length === 0 ? (
+        ) : affiliateProducts.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-6 text-center py-12">
-            <p className="text-gray-600 mb-4">No active affiliate products found.</p>
+            <p className="text-gray-600 mb-4">No affiliate products found.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeAffiliateProducts.map((product) => (
+            {affiliateProducts.map((product) => (
               <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 overflow-hidden">
                   <img 
@@ -907,7 +849,7 @@ const AdminDashboard = () => {
                       <button
                         onClick={() => handleDeleteProduct(product)}
                         className="text-gray-500 hover:text-red-600 p-1"
-                        title="Deactivate product"
+                        title="Delete product"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -915,8 +857,8 @@ const AdminDashboard = () => {
                   </div>
                   
                   <div className="flex justify-between items-center mb-3">
-                    <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                      Active
+                    <span className={`px-2 py-1 rounded-full text-xs ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {product.isActive ? 'Active' : 'Inactive'}
                     </span>
                     <span className="text-sm text-gray-500">
                       Updated: {new Date(product.updatedAt).toLocaleDateString()}
@@ -937,102 +879,6 @@ const AdminDashboard = () => {
             ))}
           </div>
         )}
-        
-        {/* Footer button to view inactive products */}
-        <div className="mt-8 pt-6 border-t border-gray-200 flex justify-center">
-          <button
-            onClick={() => setCurrentView('inactiveAffiliateProducts')}
-            className="flex items-center bg-gray-200 text-gray-700 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors"
-          >
-            View Inactive Products ({inactiveAffiliateProducts.length})
-          </button>
-        </div>
-      </>
-    );
-  };
-
-  // Render the inactive affiliate products view
-  const renderInactiveAffiliateProductsView = () => {
-    return (
-      <>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Inactive Affiliate Products</h2>
-          <button
-            onClick={() => setCurrentView('affiliatesDashboard')}
-            className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
-          >
-            Back to Active Products
-          </button>
-        </div>
-        
-        {isLoadingAffiliateProducts ? (
-          <div className="bg-white rounded-lg shadow-md p-6 flex items-center justify-center h-64">
-            <p className="text-gray-600">Loading inactive products...</p>
-          </div>
-        ) : affiliateProductsError ? (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {affiliateProductsError}
-            </div>
-            <button
-              onClick={fetchAffiliateProducts}
-              className="bg-dokirana-primary text-white py-2 px-4 rounded-md hover:bg-dokirana-secondary transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : inactiveAffiliateProducts.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-6 text-center py-12">
-            <p className="text-gray-600 mb-4">No inactive affiliate products found.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {inactiveAffiliateProducts.map((product) => (
-              <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={product.imageUrl} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-lg">{product.name}</h3>
-                    <div className="flex space-x-1">
-                      <button
-                        onClick={() => handleEditProduct(product)}
-                        className="text-gray-500 hover:text-dokirana-primary p-1"
-                        title="Edit product"
-                      >
-                        <Edit size={16} />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
-                      Inactive
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      Updated: {new Date(product.updatedAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  
-                  <a 
-                    href={product.affiliateLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center justify-center w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
-                  >
-                    View Affiliate Link
-                    <ExternalLink size={14} className="ml-1" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </>
     );
   };
@@ -1041,15 +887,15 @@ const AdminDashboard = () => {
     return (
       <>
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Welcome, {adminData?.name || MOCK_ADMIN_DATA.name || 'Admin'}</h2>
+          <h2 className="text-xl font-semibold mb-4">Welcome, {adminData?.name || 'Admin'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 border rounded-md">
               <p className="text-gray-600 mb-1">Email</p>
-              <p className="font-medium">{adminData?.email || MOCK_ADMIN_DATA.email}</p>
+              <p className="font-medium">{adminData?.email}</p>
             </div>
             <div className="p-4 border rounded-md">
               <p className="text-gray-600 mb-1">Role</p>
-              <p className="font-medium">{adminData?.role || MOCK_ADMIN_DATA.role}</p>
+              <p className="font-medium">{adminData?.role}</p>
             </div>
           </div>
         </div>
@@ -1124,7 +970,6 @@ const AdminDashboard = () => {
         {currentView === 'branchApproval' && renderBranchApprovalView()}
         {currentView === 'branchDetails' && renderBranchDetailsView()}
         {currentView === 'affiliatesDashboard' && renderAffiliatesDashboardView()}
-        {currentView === 'inactiveAffiliateProducts' && renderInactiveAffiliateProductsView()}
       </main>
       
       {/* Edit Product Modal */}
