@@ -31,6 +31,11 @@ const config = {
       createProduct: '/api/affiliate/products',
       updateProduct: '/api/affiliate/products/{productId}',
       deleteProduct: '/api/affiliate/products/{productId}',
+    },
+    stats: {
+      deliveredOrders: '/api/stats/orders/delivered',
+      activeCustomers: '/api/stats/customers',
+      activeBranches: '/api/stats/branches',
     }
   },
   

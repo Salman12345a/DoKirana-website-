@@ -5,6 +5,7 @@ import affiliateService, { AffiliateProduct } from '../services/affiliateService
 import EditAffiliateProductModal from '../components/EditAffiliateProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import config from '../config/config';
+import { fetchDeliveredOrders, fetchActiveCustomers, fetchActiveBranches } from '../services/statsService'; // Import the new service
 
 // Mock data for testing purposes
 const MOCK_ADMIN_DATA = {
@@ -64,10 +65,6 @@ interface Branch {
   address: BranchAddress;
 }
 
-// Using AffiliateProduct interface from affiliateService
-
-// Using response interfaces from affiliateService
-
 interface BranchResponse {
   status: string;
   message: string;
@@ -108,6 +105,13 @@ const AdminDashboard = () => {
   const [productToDelete, setProductToDelete] = useState<AffiliateProduct | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
+  // Quick Stats state
+  const [deliveredOrders, setDeliveredOrders] = useState<number>(0);
+  const [activeCustomers, setActiveCustomers] = useState<number>(0);
+  const [activeBranches, setActiveBranches] = useState<number>(0);
+  const [statsLoading, setStatsLoading] = useState<boolean>(true);
+  const [statsError, setStatsError] = useState<string>('');
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -117,21 +121,18 @@ const AdminDashboard = () => {
       
       console.log('AdminDashboard: Checking authentication...');
       
-      // Check if token exists
       if (!accessToken) {
         console.log('AdminDashboard: No access token found, redirecting to login');
         navigate('/admin/login');
         return false;
       }
       
-      // Check if token is expired (if remember me was used)
       if (tokenExpiry) {
         const expiryDate = new Date(tokenExpiry);
         console.log('AdminDashboard: Token expiry date:', expiryDate.toLocaleString());
         console.log('AdminDashboard: Current date:', new Date().toLocaleString());
         
         if (expiryDate < new Date()) {
-          // Token expired
           console.log('AdminDashboard: Token expired, redirecting to login');
           localStorage.removeItem(config.auth.tokenStorageKey);
           localStorage.removeItem(config.auth.tokenExpiryKey);
@@ -146,7 +147,6 @@ const AdminDashboard = () => {
     
     const fetchAdminData = async () => {
       try {
-        // Check if we have stored admin data from login
         const storedAdminData = localStorage.getItem('adminData');
         
         if (storedAdminData) {
@@ -156,7 +156,6 @@ const AdminDashboard = () => {
           return;
         }
         
-        // Fallback to mock data for testing if USE_MOCK_DATA is true and no stored data
         if (USE_MOCK_DATA) {
           console.log('No stored admin data found. Using mock admin data for testing');
           setAdminData(MOCK_ADMIN_DATA);
@@ -180,7 +179,6 @@ const AdminDashboard = () => {
           
           if (!response.ok) {
             if (response.status === 401) {
-              // Unauthorized, token invalid
               localStorage.removeItem(config.auth.tokenStorageKey);
               localStorage.removeItem(config.auth.tokenExpiryKey);
               navigate('/admin/login');
@@ -193,7 +191,6 @@ const AdminDashboard = () => {
           setAdminData(data.data.admin);
         } catch (fetchError) {
           console.error('Error fetching admin data:', fetchError);
-          // Fallback to mock data if API call fails
           console.log('Falling back to mock data due to API failure');
           setAdminData(MOCK_ADMIN_DATA);
         }
@@ -206,8 +203,45 @@ const AdminDashboard = () => {
       }
     };
     
-    checkAuth();
-    fetchAdminData();
+    const fetchStats = async () => {
+      if (USE_MOCK_DATA) {
+        console.log('Using mock stats data');
+        setDeliveredOrders(183);
+        setActiveCustomers(333);
+        setActiveBranches(1);
+        setStatsLoading(false);
+        return;
+      }
+
+      try {
+        setStatsLoading(true);
+        setStatsError('');
+        const [orders, customers, branches] = await Promise.all([
+          fetchDeliveredOrders(),
+          fetchActiveCustomers(),
+          fetchActiveBranches(),
+        ]);
+        setDeliveredOrders(orders);
+        setActiveCustomers(customers);
+        setActiveBranches(branches);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        if (error instanceof Error && error.message === 'No access token found. Please log in.') {
+          navigate('/admin/login');
+          return;
+        }
+        setStatsError('Failed to load stats. Please try again later.');
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    if (checkAuth()) {
+      fetchAdminData();
+      fetchStats();
+      const interval = setInterval(fetchStats, 30000); // Fetch stats every 30 seconds
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
   }, [navigate]);
   
   const handleLogout = () => {
@@ -219,7 +253,6 @@ const AdminDashboard = () => {
   
   const handleUpdateBranchStatus = async (branchId: string, newStatus: 'approved' | 'rejected') => {
     try {
-      // For demo purposes in mock mode, just update the UI without API call
       if (USE_MOCK_DATA) {
         console.log('Mock mode: Simulating branch status update');
         if (branchDetails) {
@@ -232,7 +265,6 @@ const AdminDashboard = () => {
         return;
       }
       
-      // In real mode, make the API call with proper token
       const accessToken = localStorage.getItem(config.auth.tokenStorageKey);
       
       if (!accessToken) {
@@ -244,7 +276,6 @@ const AdminDashboard = () => {
       const url = `${config.api.baseUrl}${config.api.admin.updateBranchStatus.replace('{branchId}', branchId)}`;
       console.log('Making API request to:', url);
       
-      // Make sure the token is valid and properly formatted
       if (!accessToken.startsWith('ey')) {
         console.error('Invalid token format:', accessToken.substring(0, 10) + '...');
         alert('Invalid authentication token. Please log in again.');
@@ -253,7 +284,6 @@ const AdminDashboard = () => {
         return;
       }
 
-      // Log headers and request details for debugging
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
@@ -276,7 +306,6 @@ const AdminDashboard = () => {
       console.log('Response data:', data);
       
       if (response.ok) {
-        // Update branch details in state
         if (branchDetails) {
           setBranchDetails({
             ...branchDetails,
@@ -284,10 +313,8 @@ const AdminDashboard = () => {
           });
         }
         
-        // Show success message
         alert(`Branch status updated to ${newStatus} successfully!`);
       } else {
-        // Handle specific error cases
         if (data.message?.includes('token')) {
           console.error('Token error detected:', data.message);
           alert('Your session has expired. Please log in again.');
@@ -331,7 +358,6 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       console.error('Error sending OTP:', err);
-      // For demo purposes, simulate success
       if (USE_MOCK_DATA) {
         setOtpSent(true);
       } else {
@@ -371,7 +397,6 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       console.error('Error verifying OTP:', err);
-      // For demo purposes, simulate success with mock data
       if (USE_MOCK_DATA) {
         const mockBranchData = {
           location: {
@@ -685,10 +710,7 @@ const AdminDashboard = () => {
     setAffiliateProductsError('');
 
     try {
-      // Use the affiliate service to get upload URL
       const uploadData = await affiliateService.getUploadUrl();
-      
-      // Navigate to create affiliate product page with upload data
       navigate('/create-affiliate-product', { 
         state: { 
           uploadData: uploadData 
@@ -696,115 +718,82 @@ const AdminDashboard = () => {
       });
     } catch (error) {
       console.error('Error preparing to create affiliate product:', error);
-      
-      // Handle unauthorized error
       if (error instanceof Error && error.message === 'Unauthorized') {
         navigate('/admin/login');
         return;
       }
-      
       setAffiliateProductsError('Failed to prepare for product creation. Please try again later.');
     } finally {
       setIsCreatingProduct(false);
     }
   };
   
-  // Handle editing a product
   const handleEditProduct = (product: AffiliateProduct) => {
     setProductToEdit(product);
     setEditModalOpen(true);
   };
   
-  // Handle successful product update
   const handleProductUpdated = (updatedProduct: AffiliateProduct) => {
-    // Update the appropriate products list based on product status
     if (updatedProduct.isActive) {
-      // Check if the product was inactive before and is now active
       const wasInInactiveList = inactiveAffiliateProducts.some(p => p._id === updatedProduct._id);
-      
       if (wasInInactiveList) {
-        // Remove from inactive list
         setInactiveAffiliateProducts(prev => 
           prev.filter(p => p._id !== updatedProduct._id)
         );
-        // Add to active list
         setActiveAffiliateProducts(prev => [...prev, updatedProduct]);
       } else {
-        // Just update in active list
         setActiveAffiliateProducts(prev => 
           prev.map(p => p._id === updatedProduct._id ? updatedProduct : p)
         );
       }
     } else {
-      // Product is now inactive
-      // Check if the product was active before and is now inactive
       const wasInActiveList = activeAffiliateProducts.some(p => p._id === updatedProduct._id);
-      
       if (wasInActiveList) {
-        // Remove from active list
         setActiveAffiliateProducts(prev => 
           prev.filter(p => p._id !== updatedProduct._id)
         );
-        // Add to inactive list
         setInactiveAffiliateProducts(prev => [...prev, updatedProduct]);
       } else {
-        // Just update in inactive list
         setInactiveAffiliateProducts(prev => 
           prev.map(p => p._id === updatedProduct._id ? updatedProduct : p)
         );
       }
     }
-    
     setEditModalOpen(false);
     setProductToEdit(null);
   };
   
-  // Handle deleting a product
   const handleDeleteProduct = (product: AffiliateProduct) => {
     setProductToDelete(product);
     setDeleteDialogOpen(true);
   };
   
-  // Confirm product deletion
   const confirmDeleteProduct = async () => {
     if (!productToDelete) return;
     
     setIsDeleting(true);
     
     try {
-      // Use the affiliate service to delete (deactivate) the product
       const deactivatedProduct = await affiliateService.deleteProduct(productToDelete._id);
-      
-      // Remove from active products list
       setActiveAffiliateProducts(prevProducts => 
         prevProducts.filter(p => p._id !== deactivatedProduct._id)
       );
-      
-      // Add to inactive products list
       setInactiveAffiliateProducts(prevProducts => {
-        // Check if product already exists in inactive list
         const exists = prevProducts.some(p => p._id === deactivatedProduct._id);
-        
         if (exists) {
-          // Update it
           return prevProducts.map(p => p._id === deactivatedProduct._id ? deactivatedProduct : p);
         } else {
-          // Add it
           return [...prevProducts, deactivatedProduct];
         }
       });
-      
       setDeleteDialogOpen(false);
       setProductToDelete(null);
     } catch (error) {
       console.error('Error deleting product:', error);
-      
-      // Handle unauthorized error
       if (error instanceof Error && error.message === 'Unauthorized') {
         navigate('/admin/login');
         return;
       }
-      
       setAffiliateProductsError('Failed to delete product. Please try again later.');
     } finally {
       setIsDeleting(false);
@@ -816,18 +805,13 @@ const AdminDashboard = () => {
     setAffiliateProductsError('');
     
     try {
-      // Use the affiliate service to get products
       const products = await affiliateService.getProducts();
-      
-      // Separate active and inactive products
       const active = products.filter(product => product.isActive);
       const inactive = products.filter(product => !product.isActive);
-      
       setActiveAffiliateProducts(active);
       setInactiveAffiliateProducts(inactive);
     } catch (error) {
       console.error('Error fetching affiliate products:', error);
-      // Handle unauthorized error
       if (error instanceof Error && error.message === 'Unauthorized') {
         navigate('/admin/login');
         return;
@@ -837,8 +821,6 @@ const AdminDashboard = () => {
       setIsLoadingAffiliateProducts(false);
     }
   };
-
-// ... (rest of the code remains the same)
   
   const renderAffiliatesDashboardView = () => {
     return (
@@ -938,7 +920,6 @@ const AdminDashboard = () => {
           </div>
         )}
         
-        {/* Footer button to view inactive products */}
         <div className="mt-8 pt-6 border-t border-gray-200 flex justify-center">
           <button
             onClick={() => setCurrentView('inactiveAffiliateProducts')}
@@ -951,7 +932,6 @@ const AdminDashboard = () => {
     );
   };
 
-  // Render the inactive affiliate products view
   const renderInactiveAffiliateProductsView = () => {
     return (
       <>
@@ -1057,20 +1037,28 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-3">Quick Stats</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Orders</span>
-                <span className="font-medium">245</span>
+            {statsLoading ? (
+              <p className="text-gray-600">Loading stats...</p>
+            ) : statsError ? (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                {statsError}
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Users</span>
-                <span className="font-medium">1,204</span>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Delivered Orders</span>
+                  <span className="font-medium">{deliveredOrders}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Active Customers</span>
+                  <span className="font-medium">{activeCustomers}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Active Branches</span>
+                  <span className="font-medium">{activeBranches}</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total Stores</span>
-                <span className="font-medium">37</span>
-              </div>
-            </div>
+            )}
           </div>
           
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -1127,7 +1115,6 @@ const AdminDashboard = () => {
         {currentView === 'inactiveAffiliateProducts' && renderInactiveAffiliateProductsView()}
       </main>
       
-      {/* Edit Product Modal */}
       {productToEdit && (
         <EditAffiliateProductModal
           product={productToEdit}
@@ -1140,7 +1127,6 @@ const AdminDashboard = () => {
         />
       )}
       
-      {/* Delete Confirmation Dialog */}
       {productToDelete && (
         <ConfirmDialog
           isOpen={deleteDialogOpen}
