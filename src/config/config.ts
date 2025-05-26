@@ -10,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const config = {
   // API base URLs
   api: {
-    baseUrl: isDevelopment ? 'http://localhost:3000' : 'http://dokirana-env.eba-a4dkw2tt.ap-south-1.elasticbeanstalk.com',
+    baseUrl: 'http://dokirana.ap-south-1.elasticbeanstalk.com',
     auth: {
       admin: {
         login: '/api/auth/admin/login',
