@@ -9,25 +9,11 @@ const About = () => {
     {
       name: "Syed Salman",
       role: "Founder & CEO",
-      bio: "Salman founded DoKirana with a vision to bridge the gap between traditional Kirana stores and digital convenience.",
-      image: "/lovable-uploads/a0d0b563-7fb6-4a6d-be40-4bc9358a403c.png"
+      image: "https://dokiranaofficial.s3.ap-south-1.amazonaws.com/professional+photo.jpg"
     },
     {
-      name: "Syed Rubina",
-      role: "Chief Operating Officer",
-      bio: "Rubina oversees operations and ensures our platform delivers seamless experiences for both customers and store owners.",
-      image: "/lovable-uploads/a0d0b563-7fb6-4a6d-be40-4bc9358a403c.png"
-    },
-    {
-      name: "Amrit Matheparty ",
-      role: "Head of Technology",
-      bio: "Amrit  leads our tech team, developing innovative solutions to connect local stores with digital shoppers.",
-      image: "/lovable-uploads/a0d0b563-7fb6-4a6d-be40-4bc9358a403c.png"
-    },
-    {
-      name: "Neha Gupta",
-      role: "Head of Partnerships",
-      bio: "Neha works directly with Kirana store owners, helping them grow their business through our platform.",
+      name: "Amrit Mattaparty",
+      role: "Chief Marketing Officer (CMO)",
       image: "/lovable-uploads/a0d0b563-7fb6-4a6d-be40-4bc9358a403c.png"
     }
   ];
@@ -159,19 +145,16 @@ const About = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {team.map((member, index) => (
-                <div key={index} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow text-center">
-                  <img 
-                    src={member.image} 
-                    alt={member.name} 
-                    className="w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 border-dokirana-lighter"
-                  />
-                  <h3 className="text-xl font-semibold text-dokirana-primary mb-1">{member.name}</h3>
-                  <p className="text-dokirana-light font-medium mb-3">{member.role}</p>
-                  <p className="text-gray-600 text-sm">{member.bio}</p>
-                </div>
-              ))}
+            <div className="flex justify-center items-center">
+              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow text-center">
+                <img 
+                  src={team[0].image} 
+                  alt={team[0].name} 
+                  className="w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 border-dokirana-lighter"
+                />
+                <h3 className="text-2xl font-bold text-dokirana-primary mb-1">{team[0].name}</h3>
+                <p className="text-dokirana-light font-medium">{team[0].role}</p>
+              </div>
             </div>
           </div>
         </section>

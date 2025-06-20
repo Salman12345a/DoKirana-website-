@@ -17,6 +17,8 @@ import ShippingPolicy from "./pages/ShippingPolicy";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateAffiliateProduct from "./pages/CreateAffiliateProduct";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CustomerTerms from "./pages/CustomerTerms";
 import AuthGuard from "./components/AuthGuard";
 import { useEffect } from "react";
 import config from "./config/config";
@@ -61,6 +63,8 @@ const App = () => (
             <Route path="/branch/terms" element={<BranchTerms />} />
             <Route path="/cancellations-and-refunds" element={<CancellationsAndRefunds />} />
             <Route path="/shipping-policy" element={<ShippingPolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<CustomerTerms />} />
             
             {/* Admin Routes */}
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />

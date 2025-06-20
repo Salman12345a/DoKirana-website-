@@ -36,7 +36,7 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <a href="#download" className="btn-download group">
+              <a href="https://play.google.com/store/apps/details?id=com.dokirana" className="btn-download group">
                 <Download size={20} className="group-hover:scale-110 transition-transform" />
                 <span>
                   <span className="block text-xs opacity-80">Get Started With</span>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Youtube } from 'lucide-react';
+import PrivacyPolicy from "../pages/PrivacyPolicy";
 
 const Footer = () => {
   return (
@@ -29,6 +30,8 @@ const Footer = () => {
               <li><Link to="/how-it-works" className="hover:text-dokirana-light transition-colors">How It Works</Link></li>
               <li><Link to="/faq" className="hover:text-dokirana-light transition-colors">FAQ</Link></li>
               <li><Link to="/blog" className="hover:text-dokirana-light transition-colors">Blog</Link></li>
+              <li><Link to="/terms" className="hover:text-dokirana-light transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-dokirana-light transition-colors">Privacy Policy</Link></li>
               <li><Link to="/admin/login" className="hover:text-dokirana-light transition-colors">Admin</Link></li>
             </ul>
           </div>
@@ -41,8 +44,8 @@ const Footer = () => {
               <li><a href="#partner-benefits" className="hover:text-dokirana-light transition-colors">Partner Benefits</a></li>
               <li><a href="#store-app" className="hover:text-dokirana-light transition-colors">Store App</a></li>
               <li><a href="#success-stories" className="hover:text-dokirana-light transition-colors">Success Stories</a></li>
-              <li><Link to="/branch/privacy-policy" className="hover:text-dokirana-light transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/branch/terms" className="hover:text-dokirana-light transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/branch/privacy-policy" className="hover:text-dokirana-light transition-colors">Branch Privacy Policy</Link></li>
+              <li><Link to="/branch/terms" className="hover:text-dokirana-light transition-colors">Branch Terms</Link></li>
               <li><Link to="/cancellations-and-refunds" className="hover:text-dokirana-light transition-colors">Cancellations & Refunds</Link></li>
               <li><Link to="/shipping-policy" className="hover:text-dokirana-light transition-colors">Shipping Policy</Link></li>
             </ul>
@@ -72,10 +75,6 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p>&copy; {new Date().getFullYear()} DoKirana. All rights reserved.</p>
             <div className="flex flex-wrap space-x-4 mt-4 md:mt-0">
-              <Link to="/branch/privacy-policy" className="hover:text-dokirana-light transition-colors text-sm">Branch Privacy Policy</Link>
-              <span className="text-gray-500">|</span>
-              <Link to="/branch/terms" className="hover:text-dokirana-light transition-colors text-sm">Branch Terms</Link>
-              <span className="text-gray-500">|</span>
               <Link to="/cancellations-and-refunds" className="hover:text-dokirana-light transition-colors text-sm">Cancellations & Refunds</Link>
               <span className="text-gray-500">|</span>
               <Link to="/shipping-policy" className="hover:text-dokirana-light transition-colors text-sm">Shipping Policy</Link>

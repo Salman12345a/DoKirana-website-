@@ -17,22 +17,16 @@ const AppDownload = () => {
                 <h3 className="text-xl font-semibold mb-2">For Customers</h3>
                 <p className="mb-4 text-white/80">Order from local shops with ease</p>
                 <div className="flex space-x-4">
-                  <a href="#" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
-                    <AppleIcon size={24} />
-                  </a>
-                  <a href="#" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
+                <a href="https://play.google.com/store/apps/details?id=com.dokirana" target="_blank" rel="noopener noreferrer" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
                     <Download size={24} />
                   </a>
                 </div>
               </div>
               
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                <h3 className="text-xl font-semibold mb-2">For Store Owners</h3>
+                <h3 className="text-xl font-semibold mb-2">For Store's</h3>
                 <p className="mb-4 text-white/80">Manage orders & grow your business</p>
                 <div className="flex space-x-4">
-                  <a href="#" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
-                    <AppleIcon size={24} />
-                  </a>
                   <a href="#" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
                     <Download size={24} />
                   </a>
@@ -42,7 +36,7 @@ const AppDownload = () => {
             
             <div className="flex items-center gap-4">
               <MonitorSmartphone size={36} className="text-white/80" />
-              <p className="text-white/80">Available on iOS and Android devices</p>
+              <p className="text-white/80">Available on Android devices</p>
             </div>
           </div>
           
