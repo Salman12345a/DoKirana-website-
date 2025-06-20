@@ -10,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const config = {
   // API base URLs
   api: {
-    baseUrl: 'https://dokirana.el.r.appspot.com',
+    baseUrl: 'https://dokirana-85740.el.r.appspot.com',
     auth: {
       admin: {
         login: '/api/auth/admin/login',
@@ -48,7 +48,7 @@ const config = {
   
   // Feature flags
   features: {
-    useMockData: false, // Set to false to make real API calls
+    useMockData: false // Disable mock mode
   }
 };
 

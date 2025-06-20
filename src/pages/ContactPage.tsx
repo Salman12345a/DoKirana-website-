@@ -34,15 +34,20 @@ const ContactPage = () => {
               <h2 className="text-3xl font-bold text-dokirana-primary mb-4">Find Us</h2>
               <p className="text-lg text-gray-700 flex items-center justify-center gap-2">
                 <MapPin size={20} className="text-dokirana-primary" />
-                123 Main Street, City Center, State, Country - 10001
+                2-4-1113/75/A Nimboli adda, Kachiguda Hyderabad, Telangana, India - 500027
               </p>
             </div>
             
             <div className="bg-white p-2 rounded-xl shadow-md">
               <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                {/* Placeholder for a map - in a real implementation you would use a Google Maps embed or similar */}
-                <div className="w-full h-[400px] bg-gray-200 flex items-center justify-center">
-                  <p className="text-gray-500">Interactive Map Would Be Displayed Here</p>
+                <div className="w-full h-[400px] rounded-lg overflow-hidden">
+                  <iframe
+                    title="DoKirana Location"
+                    src="https://maps.google.com/maps?q=17.386739,78.495694&z=16&output=embed"
+                    className="w-full h-full border-0"
+                    allowFullScreen
+                    loading="lazy"
+                  />
                 </div>
               </div>
             </div>

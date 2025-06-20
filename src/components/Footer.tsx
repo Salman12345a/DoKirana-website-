@@ -15,7 +15,7 @@ const Footer = () => {
               <a href="https://www.instagram.com/dokirana186org?utm_source=qr&igsh=dGs2M2llb2I1ZW5l" className="hover:text-dokirana-light transition-colors" aria-label="Instagram">
                 <Instagram size={20} />
               </a>
-              <a href="https://youtube.com/@DoKirana186org" className="hover:text-dokirana-light transition-colors" aria-label="YouTube">
+              <a href="https://www.youtube.com/@DoKirana" className="hover:text-dokirana-light transition-colors" aria-label="YouTube">
                 <Youtube size={24} />
               </a>
             </div>
@@ -28,8 +28,7 @@ const Footer = () => {
               <li><Link to="/" className="hover:text-dokirana-light transition-colors">Home</Link></li>
               <li><Link to="/about" className="hover:text-dokirana-light transition-colors">About Us</Link></li>
               <li><Link to="/how-it-works" className="hover:text-dokirana-light transition-colors">How It Works</Link></li>
-              <li><Link to="/faq" className="hover:text-dokirana-light transition-colors">FAQ</Link></li>
-              <li><Link to="/blog" className="hover:text-dokirana-light transition-colors">Blog</Link></li>
+              <li><Link to="/faqs" className="hover:text-dokirana-light transition-colors">FAQ</Link></li>
               <li><Link to="/terms" className="hover:text-dokirana-light transition-colors">Terms & Conditions</Link></li>
               <li><Link to="/privacy-policy" className="hover:text-dokirana-light transition-colors">Privacy Policy</Link></li>
               <li><Link to="/admin/login" className="hover:text-dokirana-light transition-colors">Admin</Link></li>
@@ -65,7 +64,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Mail size={20} className="mr-2 flex-shrink-0" />
-                <span>syedsalman186org@gmail.com</span>
+                <span>dokiranaorg@gmail.com</span>
               </li>
             </ul>
           </div>
