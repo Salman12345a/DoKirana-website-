@@ -37,11 +37,11 @@ const StoreOwners = () => {
             <div className="bg-dokirana-lighter p-6 rounded-lg mb-8">
               <h4 className="text-lg font-medium text-dokirana-primary mb-3">Simple Onboarding Process</h4>
               <p className="text-gray-700">
-                Getting started with DoKirana is easy. Download the Partner app, complete your registration, and our team will guide you through the setup process.
+                Getting started with DoKirana is easy. Fill the Google Form, complete your registration, and our team will guide you through the setup process Via WhatsApp and Kindly Remember that our team will respond u with in 2 days of Registration.
               </p>
             </div>
             
-            <a href="#download" className="btn-primary">Become a Partner</a>
+            <a href="https://forms.gle/P1CEoEmjQytUijGL9" target="_blank" rel="noopener noreferrer" className="btn-primary">Become a Partner</a>
           </div>
           
           <div className="order-1 lg:order-2 flex justify-center">
