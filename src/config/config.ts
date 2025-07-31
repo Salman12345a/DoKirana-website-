@@ -10,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const config = {
   // API base URLs
   api: {
-    baseUrl: 'https://dokirana-85740.el.r.appspot.com',
+    baseUrl: 'http://localhost:3000',
     auth: {
       admin: {
         login: '/api/auth/admin/login',
@@ -43,6 +43,7 @@ const config = {
   auth: {
     tokenStorageKey: 'accessToken',
     tokenExpiryKey: 'tokenExpiry',
+    adminInfoKey: 'adminData',
     defaultTokenExpiry: 30, // days
   },
   

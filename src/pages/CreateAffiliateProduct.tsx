@@ -4,6 +4,45 @@ import config from '../config/config';
 import { Upload, Check, AlertCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 import affiliateService, { UploadUrlData } from '../services/affiliateService';
 
+// Helper: convert any image file to JPEG (returns a new File object)
+const convertImageFileToJpeg = (file: File, quality = 0.9): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      if (!e.target) return reject(new Error('Failed to read file'));
+      img.src = e.target.result as string;
+    };
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Canvas not supported'));
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject(new Error('JPEG conversion failed'));
+          const jpegFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), {
+            type: 'image/jpeg',
+            lastModified: Date.now(),
+          });
+          resolve(jpegFile);
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+
+    img.onerror = (err) => reject(err);
+
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+};
+
 // Using UploadUrlData from affiliateService
 
 type Step = 'upload' | 'details';
@@ -120,6 +159,20 @@ const CreateAffiliateProduct = () => {
       // Log the file details
       console.log(`File: ${selectedFile.name}, Type: ${selectedFile.type}, Size: ${selectedFile.size} bytes`);
       
+      // Ensure we upload JPEG regardless of original type
+      let fileToUpload: File = selectedFile;
+      if (selectedFile.type !== 'image/jpeg') {
+        try {
+          console.log('Converting image to JPEG before upload...');
+          fileToUpload = await convertImageFileToJpeg(selectedFile);
+        } catch (convErr) {
+          console.error('JPEG conversion failed:', convErr);
+          setUploadError('Image conversion failed. Please try a different image.');
+          setIsUploading(false);
+          return;
+        }
+      }
+
       // Use XMLHttpRequest for better control over the upload process
       const xhr = new XMLHttpRequest();
       
@@ -138,7 +191,7 @@ const CreateAffiliateProduct = () => {
         
         // Set minimal headers for S3 - DO NOT set x-amz-acl header
         // The presigned URL already includes the necessary permissions
-        xhr.setRequestHeader('Content-Type', selectedFile.type);
+        xhr.setRequestHeader('Content-Type', 'image/jpeg');
         
         // Handle successful response
         xhr.onload = () => {
@@ -162,7 +215,7 @@ const CreateAffiliateProduct = () => {
         
         // Send the file as raw binary data
         console.log('Sending file to S3...');
-        xhr.send(selectedFile);
+        xhr.send(fileToUpload);
       });
       
       console.log('Waiting for upload to complete...');

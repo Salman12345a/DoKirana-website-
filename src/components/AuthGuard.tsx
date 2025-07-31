@@ -51,10 +51,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
           return;
         }
         
-        // Token valid, and we're not on dashboard, redirect to dashboard if admin path
-        if (location.pathname.startsWith('/admin') && location.pathname !== '/admin/dashboard') {
-          navigate('/admin/dashboard');
-        }
+        // Token is valid, allow access to the requested admin page.
       }
     };
     

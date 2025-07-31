@@ -9,7 +9,7 @@ const About = () => {
     {
       name: "Syed Salman",
       role: "Founder & CEO",
-      image: "https://dokiranaofficial.s3.ap-south-1.amazonaws.com/professional+photo.jpg"
+      image: "https://storage.googleapis.com/dokirana-official/professional%20photo.jpg"
     },
     {
       name: "Amrit Mattaparty",

@@ -16,6 +16,9 @@ import CancellationsAndRefunds from "./pages/CancellationsAndRefunds";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import BranchManagementPage from "./pages/BranchManagementPage";
+import InventoryCategoriesScreen from "./pages/InventoryCategoriesScreen";
+import ProductsScreen from "./pages/ProductsScreen";
 import CreateAffiliateProduct from "./pages/CreateAffiliateProduct";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CustomerTerms from "./pages/CustomerTerms";
@@ -69,7 +72,10 @@ const App = () => (
             {/* Admin Routes */}
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                        <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/manage-branch" element={<AdminRoute><BranchManagementPage /></AdminRoute>} />
+            <Route path="/admin/manage-branch/:branchId/inventory" element={<AdminRoute><InventoryCategoriesScreen /></AdminRoute>} />
+            <Route path="/admin/manage-branch/:branchId/inventory/:categoryId" element={<AdminRoute><ProductsScreen /></AdminRoute>} />
             <Route path="/create-affiliate-product" element={<AdminRoute><CreateAffiliateProduct /></AdminRoute>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
