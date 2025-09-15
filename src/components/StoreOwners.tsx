@@ -41,7 +41,7 @@ const StoreOwners = () => {
               </p>
             </div>
             
-            <a href="https://forms.gle/P1CEoEmjQytUijGL9" target="_blank" rel="noopener noreferrer" className="btn-primary">Become a Partner</a>
+            <a href="https://play.google.com/store/apps/details?id=com.dkbranch&pcampaignid=web_share" target="_blank" rel="noopener noreferrer" className="btn-primary">Become a Partner</a>
           </div>
           
           <div className="order-1 lg:order-2 flex justify-center">

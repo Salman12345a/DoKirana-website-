@@ -60,7 +60,7 @@ const Contact = () => {
                 <Phone className="mr-4 mt-1 flex-shrink-0" size={24} />
                 <div>
                   <h4 className="font-medium">Phone Number</h4>
-                  <p className="text-white/80 mt-1">+91 8121700697</p>
+                  <p className="text-white/80 mt-1">+91 6302675240</p>
                 </div>
               </div>
               

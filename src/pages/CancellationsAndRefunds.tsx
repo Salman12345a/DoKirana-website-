@@ -42,7 +42,7 @@ const CancellationsAndRefunds: React.FC = () => {
             <p>For any queries related to cancellations or refunds, please contact our customer service:</p>
             <div className="ml-4 mt-2">
               <p>📧 Email: dokiranaorg@gmail.com</p>
-              <p>📞 Phone: +91 8121700697</p>
+              <p>📞 Phone: +91 6302675240</p>
             </div>
           </section>
         </div>

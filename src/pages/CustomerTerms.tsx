@@ -140,7 +140,7 @@ const CustomerTerms: React.FC = (): ReactElement => {
             </p>
             <ul className="list-disc list-inside mb-4">
               <li>Email: dokiranaorg@gmail.com</li>
-              <li>Phone: +91 8121700697</li>
+              <li>Phone: +91 6302675240</li>
             </ul>
           </section>
         </div>

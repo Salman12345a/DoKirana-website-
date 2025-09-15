@@ -11,3 +11,8 @@ Header set Access-Control-Allow-Origin "*"
 
 # Prevent directory listing
 Options -Indexes
+
+# Serve app-ads.txt with correct MIME type
+<Files "app-ads.txt">
+    ForceType text/plain
+</Files>

@@ -387,7 +387,7 @@ const AdminDashboard = () => {
             pincode: "234343"
           },
           _id: "680616db0b3f8961c1eb3adf",
-          phone: "+918121700697",
+          phone: "+916302675240",
           name: "Salman ki Dukan",
           branchEmail: "as@gm.c",
           openingTime: "3:30 PM",

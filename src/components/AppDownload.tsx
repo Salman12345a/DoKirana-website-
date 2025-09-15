@@ -17,7 +17,7 @@ const AppDownload = () => {
                 <h3 className="text-xl font-semibold mb-2">For Customers</h3>
                 <p className="mb-4 text-white/80">Order from local shops with ease</p>
                 <div className="flex space-x-4">
-                <a href="https://play.google.com/store/apps/details?id=com.dokirana" target="_blank" rel="noopener noreferrer" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
+                <a href="https://play.google.com/store/apps/details?id=com.dokirana&pcampaignid=web_share" target="_blank" rel="noopener noreferrer" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
                     <Download size={24} />
                   </a>
                 </div>
@@ -27,7 +27,7 @@ const AppDownload = () => {
                 <h3 className="text-xl font-semibold mb-2">For Store's</h3>
                 <p className="mb-4 text-white/80">Manage orders & grow your business</p>
                 <div className="flex space-x-4">
-                  <a href="#" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
+                  <a href="https://play.google.com/store/apps/details?id=com.dkbranch&pcampaignid=web_share" target="_blank" rel="noopener noreferrer" className="bg-white text-dokirana-primary p-3 rounded-lg hover:bg-opacity-90 transition-colors">
                     <Download size={24} />
                   </a>
                 </div>

@@ -69,17 +69,17 @@ const FAQ = () => {
     },
     {
       question: "What if I receive damaged or wrong items?",
-      answer: "You can raise a complaint directly through the app, and our support team will resolve it promptly."
+      answer: "You can raise a complaint directly through the app and inform the kirana store from where you shop about the damaged product. Our support team will also help resolve it promptly."
     },
     {
       question: "What payment methods are accepted?",
-      answer: "We accept UPI, credit/debit cards, and cash on delivery (if allowed by the store)."
+      answer: "The amount should be paid directly to the kirana store either online if they provide the feature or cash on delivery."
     },
 
     // 🏪 Kirana Store Owner FAQs
     {
       question: "How can I register my store on DoKirana?",
-      answer: "Download the DoKirana Store app and complete the registration form. Our team will verify and approve your store."
+      answer: "Download the DoKirana Branch app which is available on PlayStore and complete the registration form. Our team will verify and approve your store."
     },
     {
       question: "Is there any onboarding fee?",
@@ -91,21 +91,21 @@ const FAQ = () => {
     },
     {
       question: "Can I manage delivery myself?",
-      answer: "Yes. You can handle delivery independently or request a delivery partner from DoKirana."
+      answer: "Yes. You can handle delivery independently or request a delivery partner from DoKirana Branch App."
     },
     {
       question: "How do I receive payments?",
-      answer: "Payments go directly to your bank account or preferred UPI, depending on your setup."
+      answer: "Customer will pay u the money directly to you, if their is pickup Order and if their is HomeDelivery Order then Delivery Partner will collect the amount"
     },
     {
       question: "Can I temporarily close my store on the app?",
-      answer: "Yes, there is a 'Pause Store' option available in your dashboard."
+      answer: "Yes, there is a 'Close Store' option available in your dashboard."
     },
 
     // 🛵 Delivery Partner FAQs
     {
       question: "How can I become a delivery partner?",
-      answer: "Register through the DoKirana Rider app. After approval, you’ll start receiving delivery requests."
+      answer: "Register through the DoKirana Branch app. After approval, you’ll start receiving delivery requests."
     },
     {
       question: "What documents are needed for registration?",
@@ -115,10 +115,7 @@ const FAQ = () => {
       question: "Can my application be rejected?",
       answer: "Yes, if documents are invalid or unclear. You'll be notified with the reason and can re-apply after correction."
     },
-    {
-      question: "How do I get delivery requests?",
-      answer: "Once online, you'll be notified when there's a nearby delivery available."
-    },
+
     {
       question: "How much can I earn?",
       answer: "Earnings depend on the number of deliveries completed and distance covered. Incentives are provided for high performers."
@@ -129,10 +126,7 @@ const FAQ = () => {
       question: "The app is not working. What should I do?",
       answer: "Try updating the app. If the issue persists, contact support via the in-app help section."
     },
-    {
-      question: "How do I reset my password?",
-      answer: "Tap 'Forgot Password' on the login screen and follow the instructions."
-    },
+
     {
       question: "How do I contact DoKirana support?",
       answer: "Use the in-app chat or email us at dokiranaorg@gmail.com."

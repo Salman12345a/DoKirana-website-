@@ -44,7 +44,7 @@ const ShippingPolicy: React.FC = () => {
               For any issues in utilizing our services you may contact our helpdesk:
             </p>
             <div className="ml-4 mt-2">
-              <p>📞 Phone: +91 8121700697</p>
+              <p>📞 Phone: +91 6302675240</p>
               <p>📧 Email: dokiranaorg@gmail.com</p>
             </div>
           </section>
