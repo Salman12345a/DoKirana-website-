@@ -10,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const config = {
   // API base URLs
   api: {
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'https://dokirana-api-47864120198.asia-south1.run.app',
     auth: {
       admin: {
         login: '/api/auth/admin/login',
@@ -49,7 +49,7 @@ const config = {
   
   // Feature flags
   features: {
-    useMockData: false // Disable mock mode
+    useMockData: false // Disable mock mode are you sure?
   }
 };
 

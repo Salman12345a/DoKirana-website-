@@ -369,30 +369,6 @@ const AdminDashboard = () => {
           </div>
           
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-3">Quick Stats</h3>
-            {statsLoading ? (
-              <p>Loading stats...</p>
-            ) : statsError ? (
-              <p className="text-red-500">{statsError}</p>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Delivered Orders</span>
-                  <span className="font-medium">{deliveredOrders}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Active Customers</span>
-                  <span className="font-medium">{activeCustomers}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Active Branches</span>
-                  <span className="font-medium">{activeBranches}</span>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-3">Branch Management</h3>
             <div className="space-y-4">
               <div>
@@ -415,19 +391,6 @@ const AdminDashboard = () => {
               </button>
               {branchVerificationError && <p className="mt-2 text-sm text-red-600">{branchVerificationError}</p>}
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-3">Affiliate Management</h3>
-            <button
-              onClick={() => {
-                fetchAffiliateProducts();
-                setCurrentView('affiliatesDashboard');
-              }}
-              className="w-full bg-dokirana-primary text-white py-2 px-4 rounded-md hover:bg-dokirana-secondary transition-colors"
-            >
-              Manage Affiliate Products
-            </button>
           </div>
         </div>
       </>
