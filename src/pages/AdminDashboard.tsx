@@ -153,7 +153,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      const response = await fetch(`${config.api.baseUrl}/admin/auth/login-as-branch`, {
+      const response = await fetch(`${config.api.baseUrl}/api/admin/auth/login-as-branch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,14 +164,14 @@ const AdminDashboard = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.status === 'success' && data.data?.branch) {
-        navigate(`/admin/manage-branch/${branchId}`, { state: { branch: data.data.branch, branchId } });
+      if (response.ok && data.status === 'success') {
+        navigate('/admin/manage-branch', { state: { branch: data.data.branch } });
       } else {
-        navigate(`/admin/manage-branch/${branchId}`, { state: { branchId } });
+        setBranchVerificationError(data.message || 'Failed to verify branch. Please check the ID and try again.');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Branch verification failed:', error);
-      setBranchVerificationError(`An unexpected error occurred: ${error.message || error}`);
+      setBranchVerificationError('An unexpected error occurred. Please try again later.');
     } finally {
       setIsVerifyingBranch(false);
     }
@@ -368,33 +368,6 @@ const AdminDashboard = () => {
             <p><strong>Role:</strong> {adminData.role}</p>
           </div>
           
-          {/* Quick Stats section temporarily removed */}
-          {/*
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-3">Quick Stats</h3>
-            {statsLoading ? (
-              <p>Loading stats...</p>
-            ) : statsError ? (
-              <p className="text-red-500">{statsError}</p>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Delivered Orders</span>
-                  <span className="font-medium">{deliveredOrders}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Active Customers</span>
-                  <span className="font-medium">{activeCustomers}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Active Branches</span>
-                  <span className="font-medium">{activeBranches}</span>
-                </div>
-              </div>
-            )}
-          </div>
-          */}
-          
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-3">Branch Management</h3>
             <div className="space-y-4">
@@ -419,22 +392,6 @@ const AdminDashboard = () => {
               {branchVerificationError && <p className="mt-2 text-sm text-red-600">{branchVerificationError}</p>}
             </div>
           </div>
-
-          {/* Affiliate Management section temporarily removed */}
-          {/*
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-3">Affiliate Management</h3>
-            <button
-              onClick={() => {
-                fetchAffiliateProducts();
-                setCurrentView('affiliatesDashboard');
-              }}
-              className="w-full bg-dokirana-primary text-white py-2 px-4 rounded-md hover:bg-dokirana-secondary transition-colors"
-            >
-              Manage Affiliate Products
-            </button>
-          </div>
-          */}
         </div>
       </>
     );
