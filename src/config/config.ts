@@ -3,8 +3,8 @@
  * Central place to manage environment-specific settings
  */
 
-const defaultApiBaseUrl = '/api';
-const envApiBaseUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_BASE_URL || '').trim() : '';
+const defaultApiBaseUrl = 'https://dokirana-api-47864120198.asia-south1.run.app';
+const envApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
 const apiBaseUrl = (envApiBaseUrl || defaultApiBaseUrl).replace(/\/$/, '');
 
 // Environment detection
@@ -17,29 +17,29 @@ const config = {
     baseUrl: apiBaseUrl,
     auth: {
       admin: {
-        login: '/auth/admin/login',
-        profile: '/admin/profile',
-        loginImage: '/admin/login-image',
+        login: '/api/auth/admin/login',
+        profile: '/api/admin/profile',
+        loginImage: '/api/admin/login-image',
       },
       branch: {
-        loginInitiate: '/auth/branch/login/initiate',
-        loginComplete: '/auth/branch/login/complete',
+        loginInitiate: '/api/auth/branch/login/initiate',
+        loginComplete: '/api/auth/branch/login/complete',
       }
     },
     admin: {
-      updateBranchStatus: '/admin/branch/{branchId}/status',
+      updateBranchStatus: '/api/admin/branch/{branchId}/status',
     },
     affiliate: {
-      products: '/affiliate/products',
-      uploadUrl: '/affiliate/upload-url',
-      createProduct: '/affiliate/products',
-      updateProduct: '/affiliate/products/{productId}',
-      deleteProduct: '/affiliate/products/{productId}',
+      products: '/api/affiliate/products',
+      uploadUrl: '/api/affiliate/upload-url',
+      createProduct: '/api/affiliate/products',
+      updateProduct: '/api/affiliate/products/{productId}',
+      deleteProduct: '/api/affiliate/products/{productId}',
     },
     stats: {
-      deliveredOrders: '/stats/orders/delivered',
-      activeCustomers: '/stats/customers',
-      activeBranches: '/stats/branches',
+      deliveredOrders: '/api/stats/orders/delivered',
+      activeCustomers: '/api/stats/customers',
+      activeBranches: '/api/stats/branches',
     }
   },
 
