@@ -164,14 +164,14 @@ const AdminDashboard = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.status === 'success') {
-        navigate('/admin/manage-branch', { state: { branch: data.data.branch } });
+      if (response.ok && data.status === 'success' && data.data?.branch) {
+        navigate(`/admin/manage-branch/${branchId}`, { state: { branch: data.data.branch, branchId } });
       } else {
-        setBranchVerificationError(data.message || 'Failed to verify branch. Please check the ID and try again.');
+        navigate(`/admin/manage-branch/${branchId}`, { state: { branchId } });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Branch verification failed:', error);
-      setBranchVerificationError('An unexpected error occurred. Please try again later.');
+      setBranchVerificationError(`An unexpected error occurred: ${error.message || error}`);
     } finally {
       setIsVerifyingBranch(false);
     }
@@ -368,6 +368,8 @@ const AdminDashboard = () => {
             <p><strong>Role:</strong> {adminData.role}</p>
           </div>
           
+          {/* Quick Stats section temporarily removed */}
+          {/*
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-3">Quick Stats</h3>
             {statsLoading ? (
@@ -391,6 +393,7 @@ const AdminDashboard = () => {
               </div>
             )}
           </div>
+          */}
           
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-3">Branch Management</h3>
@@ -417,6 +420,8 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* Affiliate Management section temporarily removed */}
+          {/*
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-3">Affiliate Management</h3>
             <button
@@ -429,6 +434,7 @@ const AdminDashboard = () => {
               Manage Affiliate Products
             </button>
           </div>
+          */}
         </div>
       </>
     );
