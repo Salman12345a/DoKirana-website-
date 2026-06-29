@@ -53,7 +53,7 @@ const config = {
 
   // Feature flags
   features: {
-    useMockData: false // Disable mock mode
+    useMockData: false, // Disable mock mode
   }
 };
 
