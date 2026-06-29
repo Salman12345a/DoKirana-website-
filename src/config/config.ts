@@ -4,7 +4,7 @@
  */
 
 const defaultApiBaseUrl = '/api';
-const envApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
+const envApiBaseUrl = import.meta.env.DEV ? (import.meta.env.VITE_API_BASE_URL || '').trim() : '';
 const apiBaseUrl = (envApiBaseUrl || defaultApiBaseUrl).replace(/\/$/, '');
 
 // Environment detection
@@ -17,29 +17,29 @@ const config = {
     baseUrl: apiBaseUrl,
     auth: {
       admin: {
-        login: '/api/auth/admin/login',
-        profile: '/api/admin/profile',
-        loginImage: '/api/admin/login-image',
+        login: '/auth/admin/login',
+        profile: '/admin/profile',
+        loginImage: '/admin/login-image',
       },
       branch: {
-        loginInitiate: '/api/auth/branch/login/initiate',
-        loginComplete: '/api/auth/branch/login/complete',
+        loginInitiate: '/auth/branch/login/initiate',
+        loginComplete: '/auth/branch/login/complete',
       }
     },
     admin: {
-      updateBranchStatus: '/api/admin/branch/{branchId}/status',
+      updateBranchStatus: '/admin/branch/{branchId}/status',
     },
     affiliate: {
-      products: '/api/affiliate/products',
-      uploadUrl: '/api/affiliate/upload-url',
-      createProduct: '/api/affiliate/products',
-      updateProduct: '/api/affiliate/products/{productId}',
-      deleteProduct: '/api/affiliate/products/{productId}',
+      products: '/affiliate/products',
+      uploadUrl: '/affiliate/upload-url',
+      createProduct: '/affiliate/products',
+      updateProduct: '/affiliate/products/{productId}',
+      deleteProduct: '/affiliate/products/{productId}',
     },
     stats: {
-      deliveredOrders: '/api/stats/orders/delivered',
-      activeCustomers: '/api/stats/customers',
-      activeBranches: '/api/stats/branches',
+      deliveredOrders: '/stats/orders/delivered',
+      activeCustomers: '/stats/customers',
+      activeBranches: '/stats/branches',
     }
   },
 

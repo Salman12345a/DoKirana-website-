@@ -153,7 +153,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      const response = await fetch(`${config.api.baseUrl}/api/admin/auth/login-as-branch`, {
+      const response = await fetch(`${config.api.baseUrl}/admin/auth/login-as-branch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   const incomingUrl = new URL(req.url || '/', 'http://localhost');
-  const upstreamBase = process.env.VITE_API_BASE_URL || process.env.UPSTREAM_API_BASE_URL || DEFAULT_UPSTREAM;
+  const upstreamBase = process.env.UPSTREAM_API_BASE_URL || DEFAULT_UPSTREAM;
   const upstreamUrl = new URL(`${incomingUrl.pathname}${incomingUrl.search}`, upstreamBase);
 
   const headers = new Headers();

@@ -83,7 +83,7 @@ const createCustomCategory = async (branchId: string, name: string, imageFile: F
   formData.append('name', name);
   formData.append('categoryImage', imageFile);
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/categories`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/categories`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${adminToken}`
@@ -114,7 +114,7 @@ const createCustomProduct = async (branchId: string, categoryId: string, product
   formData.append('categoryId', categoryId);
 
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/products`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/products`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${adminToken}`
@@ -136,7 +136,7 @@ const getProductsForCategory = async (branchId: string, categoryId: string): Pro
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/categories/${categoryId}/products`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/categories/${categoryId}/products`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }
@@ -158,7 +158,7 @@ const getBranchCategories = async (branchId: string): Promise<Category[]> => {
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/categories`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/categories`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }
@@ -179,7 +179,7 @@ const removeImportedCategory = async (branchId: string, categoryId: string): Pro
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/categories/remove-imported`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/categories/remove-imported`, {
     method: 'PUT',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
@@ -202,7 +202,7 @@ const deleteCustomCategory = async (branchId: string, categoryId: string): Promi
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/categories/custom`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/categories/custom`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
@@ -225,7 +225,7 @@ const updateProductDetails = async (productId: string, productData: UpdateProduc
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/products/${productId}`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/products/${productId}`, {
     method: 'PUT',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
@@ -248,7 +248,7 @@ const removeImportedProduct = async (branchId: string, productId: string): Promi
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/products/remove-imported`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/products/remove-imported`, {
     method: 'PUT',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
@@ -271,7 +271,7 @@ const deleteCustomProduct = async (branchId: string, productId: string): Promise
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/products/custom`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/products/custom`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
@@ -294,7 +294,7 @@ const getAllDefaultCategories = async (): Promise<DefaultCategory[]> => {
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/admin/default-categories`, {
+  const response = await fetch(`${config.api.baseUrl}/admin/default-categories`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`,
     },
@@ -314,7 +314,7 @@ const importDefaultCategories = async (branchId: string, categoryIds: string[]):
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/categories/import-default`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/categories/import-default`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
@@ -337,7 +337,7 @@ const getDefaultProductsForCategory = async (defaultCategoryId: string): Promise
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/admin/default-categories/${defaultCategoryId}/products`, {
+  const response = await fetch(`${config.api.baseUrl}/admin/default-categories/${defaultCategoryId}/products`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`,
     },
@@ -356,7 +356,7 @@ const importDefaultProducts = async (branchId: string, categoryId: string, produ
     throw new Error('Admin authentication token not found.');
   }
 
-  const response = await fetch(`${config.api.baseUrl}/api/branch/${branchId}/categories/${categoryId}/import-products`, {
+  const response = await fetch(`${config.api.baseUrl}/branch/${branchId}/categories/${categoryId}/import-products`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
