@@ -3,7 +3,7 @@
  * Central place to manage environment-specific settings
  */
 
-const defaultApiBaseUrl = 'https://dokirana-api-47864120198.asia-south1.run.app';
+const defaultApiBaseUrl = '/api';
 const envApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
 const apiBaseUrl = (envApiBaseUrl || defaultApiBaseUrl).replace(/\/$/, '');
 
