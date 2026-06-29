@@ -15,7 +15,6 @@ const config = {
       admin: {
         login: '/api/auth/admin/login',
         profile: '/api/admin/profile',
-        loginImage: '/api/admin/login-image',
       },
       branch: {
         loginInitiate: '/api/auth/branch/login/initiate',

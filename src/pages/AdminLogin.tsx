@@ -152,18 +152,7 @@ const AdminLogin = () => {
           localStorage.setItem(config.auth.tokenExpiryKey, expiryDate.toString());
           console.log('Token will expire at:', expiryDate.toLocaleString());
           
-          // Trigger image endpoint
-          try {
-            await fetch(`${config.api.baseUrl}${config.api.auth.admin.loginImage}`, {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${data.data.accessToken}`
-              }
-            });
-          } catch (imageError) {
-            console.error('Image endpoint error:', imageError);
-            // Continue with login flow even if image endpoint fails
-          }
+
           
           // Redirect to admin dashboard
           navigate('/admin/dashboard');
