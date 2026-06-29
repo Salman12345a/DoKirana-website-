@@ -54,7 +54,7 @@ const BranchManagementPage = () => {
         return;
       }
 
-      const response = await fetch(`${config.api.baseUrl}/admin/branches/${branch._id}/${action}`, {
+      const response = await fetch(`\${config.api.baseUrl}/api/admin/branches/${branch._id}/${action}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${adminToken}`,
@@ -175,3 +175,4 @@ const BranchManagementPage = () => {
 };
 
 export default BranchManagementPage;
+
