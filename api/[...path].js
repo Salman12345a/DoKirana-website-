@@ -3,7 +3,7 @@ import { URL } from 'url';
 const DEFAULT_UPSTREAM = 'https://dokirana-api-47864120198.asia-south1.run.app';
 
 export const config = {
-  runtime: 'nodejs18.x',
+  runtime: 'nodejs',
 };
 
 export default async function handler(req, res) {
