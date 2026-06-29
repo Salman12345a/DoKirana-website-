@@ -3,14 +3,18 @@
  * Central place to manage environment-specific settings
  */
 
-// Environment detection (can be expanded with proper env variables)
-const isDevelopment = process.env.NODE_ENV !== 'production';
+const defaultApiBaseUrl = 'https://dokirana-api-47864120198.asia-south1.run.app';
+const envApiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
+const apiBaseUrl = (envApiBaseUrl || defaultApiBaseUrl).replace(/\/$/, '');
+
+// Environment detection
+const isDevelopment = import.meta.env.DEV;
 
 // API configuration
 const config = {
   // API base URLs
   api: {
-    baseUrl: 'http://localhost:3000',
+    baseUrl: apiBaseUrl,
     auth: {
       admin: {
         login: '/api/auth/admin/login',
@@ -38,7 +42,7 @@ const config = {
       activeBranches: '/api/stats/branches',
     }
   },
-  
+
   // Authentication
   auth: {
     tokenStorageKey: 'accessToken',
@@ -46,7 +50,7 @@ const config = {
     adminInfoKey: 'adminData',
     defaultTokenExpiry: 30, // days
   },
-  
+
   // Feature flags
   features: {
     useMockData: false // Disable mock mode

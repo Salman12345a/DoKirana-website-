@@ -172,19 +172,26 @@ const AdminLogin = () => {
         }
       } catch (fetchError) {
         console.error('API connection error:', fetchError);
-        
-        // If API is not available, use mock login as fallback for testing
-        console.log('API unavailable, falling back to mock login');
-        localStorage.setItem(config.auth.tokenStorageKey, MOCK_LOGIN_RESPONSE.data.accessToken);
-        localStorage.setItem('adminData', JSON.stringify(MOCK_LOGIN_RESPONSE.data.admin));
-        
-        if (rememberMe) {
-          const expiryDate = new Date();
-          expiryDate.setDate(expiryDate.getDate() + config.auth.defaultTokenExpiry);
-          localStorage.setItem(config.auth.tokenExpiryKey, expiryDate.toString());
+
+        const shouldUseMockFallback = import.meta.env.DEV && config.features.useMockData;
+        if (shouldUseMockFallback) {
+          console.log('API unavailable, falling back to mock login');
+          localStorage.setItem(config.auth.tokenStorageKey, MOCK_LOGIN_RESPONSE.data.accessToken);
+          localStorage.setItem('adminData', JSON.stringify(MOCK_LOGIN_RESPONSE.data.admin));
+
+          if (rememberMe) {
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + config.auth.defaultTokenExpiry);
+            localStorage.setItem(config.auth.tokenExpiryKey, expiryDate.toString());
+          }
+
+          navigate('/admin/dashboard');
+          return;
         }
-        
-        navigate('/admin/dashboard');
+
+        setError(
+          `Unable to reach the admin service at ${config.api.baseUrl}. Please verify the API URL and CORS settings for this hosting environment.`
+        );
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
