@@ -79,6 +79,9 @@ const OperatorProfile = () => {
                   <ShieldCheck size={12} />
                   Verified Operator
                 </span>
+                <span className="inline-flex items-center text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-900 border border-teal-200">
+                  {profile?.operatorId || "DK-OP-1001"}
+                </span>
               </div>
               <p className="text-xs text-gray-500 mt-1 flex items-center gap-1.5 font-mono">
                 <Phone size={12} className="text-gray-400" />

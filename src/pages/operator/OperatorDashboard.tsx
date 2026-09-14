@@ -78,6 +78,9 @@ const OperatorDashboard = () => {
             <span className="bg-teal-700/60 px-2.5 py-0.5 rounded text-xs font-semibold">
               PIN: {data?.pincode || storedOperator?.pincode || "---"}
             </span>
+            <span className="bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 px-2.5 py-0.5 rounded text-xs font-mono font-bold tracking-wide">
+              ID: {data?.operatorId || storedOperator?.operatorId || "DK-OP-1001"}
+            </span>
           </div>
         </div>
 

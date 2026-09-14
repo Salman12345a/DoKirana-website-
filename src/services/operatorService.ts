@@ -132,6 +132,7 @@ export const verifyLogin = (phone: string, otp: string, sessionId?: string) =>
   );
 
 export interface DashboardData {
+  operatorId?: string;
   pincode: string; city: string; area: string;
   partners: { kirana: number; restaurant: number; total: number };
   today: { earnings: number; transactions: number };
@@ -175,7 +176,7 @@ export const getRiders = () =>
   apiCall<{ status: string; riders: Rider[]; total: number }>(config.api.operator.riders);
 
 export interface OperatorProfile {
-  _id: string; name: string; phone: string; email?: string; pincode: string;
+  _id: string; operatorId?: string; name: string; phone: string; email?: string; pincode: string;
   city: string; area: string; bankAccountNumber?: string; bankIfscCode?: string;
   upiId?: string; activeSubscriberCount: number; lastLoginAt?: string; createdAt: string;
 }
