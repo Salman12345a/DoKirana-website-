@@ -177,6 +177,7 @@ export interface Rider {
   phone: string | number;
   isAvailable?: boolean;
   availability?: boolean;
+  currentOrders?: Array<unknown>;
   vehicleType?: string;
   licenseNumber?: string;
   rcNumber?: string;

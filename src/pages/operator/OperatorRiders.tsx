@@ -237,12 +237,14 @@ const OperatorRiders = () => {
     }
   };
 
+  const isRiderOnDelivery = (r: Rider) => Array.isArray(r.currentOrders) && r.currentOrders.length > 0;
   const isRiderAvailable = (r: Rider) =>
-    (r.status === "approved" || !r.status) && (r.isAvailable ?? r.availability ?? false);
+    (r.status === "approved" || !r.status) && (r.isAvailable ?? r.availability ?? true) && !isRiderOnDelivery(r);
   const pendingCount = riders.filter((r) => r.status === "pending").length;
   const availableCount = riders.filter(isRiderAvailable).length;
-  const busyCount = riders.filter(
-    (r) => (r.status === "approved" || !r.status) && !(r.isAvailable ?? r.availability ?? false)
+  const busyCount = riders.filter((r) => isRiderOnDelivery(r)).length;
+  const offlineCount = riders.filter(
+    (r) => (r.status === "approved" || !r.status) && !(r.isAvailable ?? r.availability ?? true) && !isRiderOnDelivery(r)
   ).length;
 
   const filteredRiders = riders.filter((r) => {
@@ -254,8 +256,7 @@ const OperatorRiders = () => {
     if (!matchesSearch) return false;
     if (filterStatus === "pending") return r.status === "pending";
     if (filterStatus === "available") return isRiderAvailable(r);
-    if (filterStatus === "busy")
-      return (r.status === "approved" || !r.status) && !(r.isAvailable ?? r.availability ?? false);
+    if (filterStatus === "busy") return isRiderOnDelivery(r) || offlineCount > 0 && !(r.isAvailable ?? r.availability ?? true);
     return true;
   });
 
@@ -491,7 +492,12 @@ const OperatorRiders = () => {
                             <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
                             Rejected
                           </span>
-                        ) : available ? (
+                        ) : isRiderOnDelivery(rider) ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                            <Truck size={12} className="text-blue-600" />
+                            On Delivery
+                          </span>
+                        ) : isRiderAvailable(rider) ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             Available
@@ -499,7 +505,7 @@ const OperatorRiders = () => {
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
                             <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                            Busy
+                            Offline
                           </span>
                         )}
                       </td>
