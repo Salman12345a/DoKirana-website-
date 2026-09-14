@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Application configuration
  * Central place to manage environment-specific settings
  */
@@ -35,20 +35,45 @@ const config = {
       deliveredOrders: '/api/stats/orders/delivered',
       activeCustomers: '/api/stats/customers',
       activeBranches: '/api/stats/branches',
-    }
+    },
+
+    // ── Operator API ──
+    operator: {
+      apply: '/api/operator/apply',
+      uploadDoc: '/api/operator/upload-document',
+      sendOtp: '/api/operator/send-otp',
+      verifyOtp: '/api/operator/verify-otp',
+      authInitiate: '/api/operator/auth/initiate-login',
+      authVerify: '/api/operator/auth/verify-login',
+      authRefresh: '/api/operator/auth/refresh-token',
+      dashboard: '/api/operator/me/dashboard',
+      partners: '/api/operator/me/partners',
+      linkPartner: '/api/operator/me/link-partner',
+      earnings: '/api/operator/me/earnings',
+      riders: '/api/operator/me/riders',
+      profile: '/api/operator/me/profile',
+      activeOrders: '/api/operators-club/dispatch/active-orders',
+      assignRider: '/api/operators-club/dispatch/assign-rider',
+    },
   },
   
   // Authentication
   auth: {
+    // Admin auth
     tokenStorageKey: 'accessToken',
     tokenExpiryKey: 'tokenExpiry',
     adminInfoKey: 'adminData',
     defaultTokenExpiry: 30, // days
+
+    // Operator auth - completely separate keys, zero collision with admin
+    operatorTokenKey: 'operatorAccessToken',
+    operatorTokenExpiryKey: 'operatorTokenExpiry',
+    operatorDataKey: 'operatorData',
   },
   
   // Feature flags
   features: {
-    useMockData: false // Disable mock mode are you sure?
+    useMockData: false
   }
 };
 

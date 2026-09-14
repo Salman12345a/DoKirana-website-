@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
+﻿import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -25,6 +25,19 @@ import CustomerTerms from "./pages/CustomerTerms";
 import AuthGuard from "./components/AuthGuard";
 import { useEffect } from "react";
 import config from "./config/config";
+
+// Operator imports
+import OperatorRegister from "./pages/operator/OperatorRegister";
+import OperatorApply from "./pages/operator/OperatorApply";
+import OperatorLogin from "./pages/operator/OperatorLogin";
+import OperatorDashboard from "./pages/operator/OperatorDashboard";
+import OperatorPartners from "./pages/operator/OperatorPartners";
+import OperatorDispatch from "./pages/operator/OperatorDispatch";
+import OperatorRiders from "./pages/operator/OperatorRiders";
+import OperatorEarnings from "./pages/operator/OperatorEarnings";
+import OperatorProfile from "./pages/operator/OperatorProfile";
+import OperatorGuard from "./components/operator/OperatorGuard";
+import OperatorLayout from "./components/operator/OperatorLayout";
 
 const queryClient = new QueryClient();
 
@@ -72,13 +85,81 @@ const App = () => (
             {/* Admin Routes */}
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="/admin/login" element={<AdminLogin />} />
-                        <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="/admin/manage-branch" element={<AdminRoute><BranchManagementPage /></AdminRoute>} />
             <Route path="/admin/manage-branch/:branchId/inventory" element={<AdminRoute><InventoryCategoriesScreen /></AdminRoute>} />
             <Route path="/admin/manage-branch/:branchId/inventory/:categoryId" element={<AdminRoute><ProductsScreen /></AdminRoute>} />
             <Route path="/create-affiliate-product" element={<AdminRoute><CreateAffiliateProduct /></AdminRoute>} />
+
+            {/* Operator Public Routes */}
+            <Route path="/operator" element={<Navigate to="/operator/register" replace />} />
+            <Route path="/operator/register" element={<OperatorRegister />} />
+            <Route path="/operator/apply" element={<OperatorApply />} />
+            <Route path="/operator/login" element={<OperatorLogin />} />
+
+            {/* Operator Protected Portal Routes */}
+            <Route
+              path="/operator/dashboard"
+              element={
+                <OperatorGuard>
+                  <OperatorLayout title="Operator Dashboard" subtitle="Territory performance, partners & earnings overview">
+                    <OperatorDashboard />
+                  </OperatorLayout>
+                </OperatorGuard>
+              }
+            />
+            <Route
+              path="/operator/partners"
+              element={
+                <OperatorGuard>
+                  <OperatorLayout title="My Partners" subtitle="Kirana stores & food establishments linked to your territory">
+                    <OperatorPartners />
+                  </OperatorLayout>
+                </OperatorGuard>
+              }
+            />
+            <Route
+              path="/operator/dispatch"
+              element={
+                <OperatorGuard>
+                  <OperatorLayout title="Live Dispatch Desk" subtitle="Real-time order coordination and rider dispatch">
+                    <OperatorDispatch />
+                  </OperatorLayout>
+                </OperatorGuard>
+              }
+            />
+            <Route
+              path="/operator/riders"
+              element={
+                <OperatorGuard>
+                  <OperatorLayout title="Rider Fleet" subtitle="Active delivery personnel registered in your zone">
+                    <OperatorRiders />
+                  </OperatorLayout>
+                </OperatorGuard>
+              }
+            />
+            <Route
+              path="/operator/earnings"
+              element={
+                <OperatorGuard>
+                  <OperatorLayout title="Earnings & Financial Ledger" subtitle="Territory subscriptions and delivery handling fees">
+                    <OperatorEarnings />
+                  </OperatorLayout>
+                </OperatorGuard>
+              }
+            />
+            <Route
+              path="/operator/profile"
+              element={
+                <OperatorGuard>
+                  <OperatorLayout title="Operator Profile" subtitle="Account credentials, assigned territory & payout details">
+                    <OperatorProfile />
+                  </OperatorLayout>
+                </OperatorGuard>
+              }
+            />
             
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthGuard>
