@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Application configuration
  * Central place to manage environment-specific settings
  */
@@ -51,6 +51,8 @@ const config = {
       linkPartner: '/api/operator/me/link-partner',
       earnings: '/api/operator/me/earnings',
       riders: '/api/operator/me/riders',
+      linkRider: '/api/operator/me/riders/link',
+      registerRider: '/api/operator/me/riders/register',
       profile: '/api/operator/me/profile',
       activeOrders: '/api/operators-club/dispatch/active-orders',
       assignRider: '/api/operators-club/dispatch/assign-rider',

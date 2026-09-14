@@ -171,9 +171,48 @@ export const getEarnings = (params?: { page?: number; limit?: number; eventType?
   );
 };
 
-export interface Rider { _id: string; name: string; phone: string; isAvailable: boolean; vehicleType?: string; }
+export interface Rider {
+  _id: string;
+  name: string;
+  phone: string | number;
+  isAvailable?: boolean;
+  availability?: boolean;
+  vehicleType?: string;
+  licenseNumber?: string;
+  rcNumber?: string;
+  status?: string;
+  createdAt?: string;
+}
+
+export interface RegisterRiderPayload {
+  name: string;
+  phone: string;
+  age?: number;
+  gender?: "male" | "female" | "other";
+  licenseNumber: string;
+  rcNumber: string;
+  documents?: Array<{ type: string; url: string }>;
+}
+
 export const getRiders = () =>
   apiCall<{ status: string; riders: Rider[]; total: number }>(config.api.operator.riders);
+
+export const linkRiderByPhone = (phone: string) =>
+  apiCall<{ status: string; message: string; rider: Rider }>(config.api.operator.linkRider, {
+    method: "POST",
+    body: JSON.stringify({ phone }),
+  });
+
+export const registerNewRider = (payload: RegisterRiderPayload) =>
+  apiCall<{ status: string; message: string; rider: Rider }>(config.api.operator.registerRider, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const removeRiderFromFleet = (riderId: string) =>
+  apiCall<{ status: string; message: string }>(`${config.api.operator.riders}/${riderId}`, {
+    method: "DELETE",
+  });
 
 export interface OperatorProfile {
   _id: string; operatorId?: string; name: string; phone: string; email?: string; pincode: string;
