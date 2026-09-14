@@ -20,6 +20,7 @@ import {
   FileText,
   User,
   CreditCard,
+  Clock,
 } from "lucide-react";
 import {
   getRiders,
@@ -49,7 +50,7 @@ const OperatorRiders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [filterAvailability, setFilterAvailability] = useState<"all" | "available" | "busy">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "available" | "busy">("all");
 
   // Modal & form states
   const [showModal, setShowModal] = useState(false);
@@ -188,7 +189,10 @@ const OperatorRiders = () => {
         rcNumber: regForm.rcNumber.trim(),
         documents,
       });
-      setModalMsg({ type: "success", text: res.message || "Rider successfully registered with verified documents!" });
+      setModalMsg({
+        type: "success",
+        text: res.message || "Rider submitted successfully! Status is Pending Verification awaiting KYC approval.",
+      });
 
       // Reset form
       setRegForm({
@@ -233,9 +237,13 @@ const OperatorRiders = () => {
     }
   };
 
-  const isRiderAvailable = (r: Rider) => r.isAvailable ?? r.availability ?? false;
+  const isRiderAvailable = (r: Rider) =>
+    (r.status === "approved" || !r.status) && (r.isAvailable ?? r.availability ?? false);
+  const pendingCount = riders.filter((r) => r.status === "pending").length;
   const availableCount = riders.filter(isRiderAvailable).length;
-  const busyCount = riders.length - availableCount;
+  const busyCount = riders.filter(
+    (r) => (r.status === "approved" || !r.status) && !(r.isAvailable ?? r.availability ?? false)
+  ).length;
 
   const filteredRiders = riders.filter((r) => {
     const term = search.toLowerCase();
@@ -244,9 +252,10 @@ const OperatorRiders = () => {
       r.phone.toString().includes(term) ||
       (r.licenseNumber && r.licenseNumber.toLowerCase().includes(term));
     if (!matchesSearch) return false;
-    const available = isRiderAvailable(r);
-    if (filterAvailability === "available") return available;
-    if (filterAvailability === "busy") return !available;
+    if (filterStatus === "pending") return r.status === "pending";
+    if (filterStatus === "available") return isRiderAvailable(r);
+    if (filterStatus === "busy")
+      return (r.status === "approved" || !r.status) && !(r.isAvailable ?? r.availability ?? false);
     return true;
   });
 
@@ -285,7 +294,7 @@ const OperatorRiders = () => {
       </div>
 
       {/* Roster KPI Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-500 font-medium">Total Territory Fleet</p>
@@ -298,7 +307,17 @@ const OperatorRiders = () => {
 
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500 font-medium">Available for Assignment</p>
+            <p className="text-xs text-gray-500 font-medium">Pending Review</p>
+            <p className="text-2xl font-bold text-amber-600 mt-0.5">{pendingCount}</p>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <Clock size={20} />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-500 font-medium">Available (Active)</p>
             <p className="text-2xl font-bold text-emerald-600 mt-0.5">{availableCount}</p>
           </div>
           <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -309,9 +328,9 @@ const OperatorRiders = () => {
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-500 font-medium">Busy / On Delivery</p>
-            <p className="text-2xl font-bold text-amber-600 mt-0.5">{busyCount}</p>
+            <p className="text-2xl font-bold text-slate-600 mt-0.5">{busyCount}</p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
             <Truck size={20} />
           </div>
         </div>
@@ -330,11 +349,11 @@ const OperatorRiders = () => {
           />
         </div>
 
-        <div className="flex items-center gap-1 bg-white border border-gray-200 p-1 rounded-xl text-xs font-medium self-start sm:self-auto">
+        <div className="flex items-center gap-1 bg-white border border-gray-200 p-1 rounded-xl text-xs font-medium self-start sm:self-auto overflow-x-auto">
           <button
-            onClick={() => setFilterAvailability("all")}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              filterAvailability === "all"
+            onClick={() => setFilterStatus("all")}
+            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+              filterStatus === "all"
                 ? "bg-teal-700 text-white font-semibold"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
@@ -342,9 +361,19 @@ const OperatorRiders = () => {
             All Riders ({riders.length})
           </button>
           <button
-            onClick={() => setFilterAvailability("available")}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              filterAvailability === "available"
+            onClick={() => setFilterStatus("pending")}
+            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+              filterStatus === "pending"
+                ? "bg-amber-600 text-white font-semibold"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Pending Review ({pendingCount})
+          </button>
+          <button
+            onClick={() => setFilterStatus("available")}
+            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+              filterStatus === "available"
                 ? "bg-emerald-600 text-white font-semibold"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
@@ -352,10 +381,10 @@ const OperatorRiders = () => {
             Available ({availableCount})
           </button>
           <button
-            onClick={() => setFilterAvailability("busy")}
-            className={`px-3 py-1.5 rounded-lg transition-all ${
-              filterAvailability === "busy"
-                ? "bg-amber-600 text-white font-semibold"
+            onClick={() => setFilterStatus("busy")}
+            className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+              filterStatus === "busy"
+                ? "bg-slate-700 text-white font-semibold"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
@@ -450,21 +479,28 @@ const OperatorRiders = () => {
                         {rider.vehicleType || "Two-Wheeler"}
                       </td>
 
-                      <td className="py-4 px-6">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                            available
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                              : "bg-gray-100 text-gray-600 border border-gray-200"
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              available ? "bg-emerald-500" : "bg-gray-400"
-                            }`}
-                          />
-                          {available ? "Available" : "Busy"}
-                        </span>
+                        {rider.status === "pending" ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            <Clock size={12} className="text-amber-600" />
+                            Pending Verification
+                          </span>
+                        ) : rider.status === "rejected" ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                            Rejected
+                          </span>
+                        ) : available ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Available
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                            Busy
+                          </span>
+                        )}
                       </td>
 
                       <td className="py-4 px-6 text-right">
