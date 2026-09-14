@@ -4,16 +4,15 @@ import {
   Store,
   UtensilsCrossed,
   Search,
-  Plus,
   Loader2,
   AlertCircle,
-  CheckCircle2,
   Calendar,
   Filter,
   RefreshCw,
   Phone,
+  Info,
 } from "lucide-react";
-import { getPartners, linkPartner, Partner } from "../../services/operatorService";
+import { getPartners, Partner } from "../../services/operatorService";
 
 const OperatorPartners = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -22,12 +21,6 @@ const OperatorPartners = () => {
   const [typeFilter, setTypeFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Link partner form state
-  const [phoneToLink, setPhoneToLink] = useState("");
-  const [linking, setLinking] = useState(false);
-  const [linkMsg, setLinkMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [showLinkModal, setShowLinkModal] = useState(false);
 
   const fetchPartnerList = async () => {
     setLoading(true);
@@ -54,29 +47,6 @@ const OperatorPartners = () => {
     fetchPartnerList();
   }, [typeFilter, statusFilter]);
 
-  const handleLinkSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!phoneToLink.trim()) return;
-
-    setLinking(true);
-    setLinkMsg(null);
-    try {
-      await linkPartner(phoneToLink.trim());
-      setLinkMsg({
-        type: "success",
-        text: `Partner with phone ${phoneToLink} successfully linked to your territory!`,
-      });
-      setPhoneToLink("");
-      fetchPartnerList();
-      setTimeout(() => setShowLinkModal(false), 2000);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to link partner";
-      setLinkMsg({ type: "error", text: message });
-    } finally {
-      setLinking(false);
-    }
-  };
-
   const filteredPartners = partners.filter((p) => {
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
@@ -99,23 +69,18 @@ const OperatorPartners = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-medium">
+            <Info size={14} className="text-emerald-600" />
+            <span>Partners link directly from DoKirana Branch & Eats apps</span>
+          </div>
           <button
             onClick={fetchPartnerList}
             disabled={loading}
-            className="p-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-medium transition-all shadow-sm"
             title="Refresh partners"
           >
-            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-          </button>
-          <button
-            onClick={() => {
-              setShowLinkModal(true);
-              setLinkMsg(null);
-            }}
-            className="flex items-center gap-2 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-all shadow-sm"
-          >
-            <Plus size={16} />
-            Link New Partner
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+            Refresh
           </button>
         </div>
       </div>
@@ -189,87 +154,6 @@ const OperatorPartners = () => {
           </div>
         </div>
       </div>
-
-      {/* Link Modal */}
-      {showLinkModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100 animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <Store size={18} className="text-teal-600" />
-                Link Existing Partner
-              </h3>
-              <button
-                onClick={() => setShowLinkModal(false)}
-                className="text-gray-400 hover:text-gray-600 text-sm font-semibold"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleLinkSubmit} className="mt-4 space-y-4">
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Enter the registered phone number of a kirana branch or restaurant located in your pincode to claim territorial operator rights.
-              </p>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Partner Registered Phone Number *
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-500 font-medium">
-                    +91
-                  </span>
-                  <input
-                    type="tel"
-                    required
-                    maxLength={10}
-                    placeholder="9876543210"
-                    value={phoneToLink}
-                    onChange={(e) => setPhoneToLink(e.target.value.replace(/\D/g, ""))}
-                    className="w-full pl-14 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none font-mono"
-                  />
-                </div>
-              </div>
-
-              {linkMsg && (
-                <div
-                  className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
-                    linkMsg.type === "success"
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                      : "bg-red-50 text-red-800 border border-red-200"
-                  }`}
-                >
-                  {linkMsg.type === "success" ? (
-                    <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
-                  ) : (
-                    <AlertCircle size={16} className="text-red-600 flex-shrink-0" />
-                  )}
-                  <span>{linkMsg.text}</span>
-                </div>
-              )}
-
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowLinkModal(false)}
-                  className="px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={linking || phoneToLink.length !== 10}
-                  className="flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 disabled:opacity-50 rounded-xl transition-colors shadow-sm"
-                >
-                  {linking && <Loader2 size={14} className="animate-spin" />}
-                  {linking ? "Verifying..." : "Confirm & Link"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Partners List */}
       {loading ? (

@@ -94,7 +94,7 @@ const OperatorDashboard = () => {
             to="/operator/partners"
             className="flex items-center gap-2 bg-white text-teal-800 hover:bg-teal-50 text-sm px-4 py-2.5 rounded-xl font-semibold transition-all shadow-sm"
           >
-            Link Partner
+            View Partners
             <ArrowRight size={15} />
           </Link>
         </div>
