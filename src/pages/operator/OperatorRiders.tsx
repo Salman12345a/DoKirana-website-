@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Bike,
   Search,
@@ -14,16 +14,35 @@ import {
   Shield,
   Truck,
   X,
-  CreditCard,
+  Upload,
+  Camera,
+  FileCheck,
   FileText,
+  User,
+  CreditCard,
 } from "lucide-react";
 import {
   getRiders,
   linkRiderByPhone,
   registerNewRider,
   removeRiderFromFleet,
+  uploadOperatorDocument,
   Rider,
 } from "../../services/operatorService";
+
+interface DocUploadState {
+  file: File | null;
+  url: string;
+  uploading: boolean;
+  error: string | null;
+}
+
+const emptyDoc = (): DocUploadState => ({
+  file: null,
+  url: "",
+  uploading: false,
+  error: null,
+});
 
 const OperatorRiders = () => {
   const [riders, setRiders] = useState<Rider[]>([]);
@@ -41,7 +60,7 @@ const OperatorRiders = () => {
   // Quick link state
   const [linkPhone, setLinkPhone] = useState("");
 
-  // Register state
+  // Register state (matching dkbranch app fields)
   const [regForm, setRegForm] = useState({
     name: "",
     phone: "",
@@ -50,6 +69,13 @@ const OperatorRiders = () => {
     licenseNumber: "",
     rcNumber: "",
   });
+
+  // 5 Documents matching dkbranch app
+  const [docPhoto, setDocPhoto] = useState<DocUploadState>(emptyDoc());
+  const [docLicense, setDocLicense] = useState<DocUploadState>(emptyDoc());
+  const [docRc, setDocRc] = useState<DocUploadState>(emptyDoc());
+  const [docAadhaarFront, setDocAadhaarFront] = useState<DocUploadState>(emptyDoc());
+  const [docAadhaarBack, setDocAadhaarBack] = useState<DocUploadState>(emptyDoc());
 
   // Remove confirmation state
   const [riderToRemove, setRiderToRemove] = useState<Rider | null>(null);
@@ -76,6 +102,26 @@ const OperatorRiders = () => {
     fetchRiderList();
   }, []);
 
+  // Generic document uploader to GCP bucket
+  const uploadDoc = async (
+    file: File,
+    docType: string,
+    setDoc: React.Dispatch<React.SetStateAction<DocUploadState>>
+  ) => {
+    setDoc((prev) => ({ ...prev, file, uploading: true, error: null }));
+    try {
+      const res = await uploadOperatorDocument(file, docType, regForm.phone || "unassigned");
+      if (res.status?.toLowerCase() === "success" && res.url) {
+        setDoc({ file, url: res.url, uploading: false, error: null });
+      } else {
+        throw new Error(res.message || "Upload failed");
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Upload failed";
+      setDoc((prev) => ({ ...prev, uploading: false, error: message }));
+    }
+  };
+
   const handleLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!linkPhone.trim() || linkPhone.length < 10) return;
@@ -100,9 +146,38 @@ const OperatorRiders = () => {
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regForm.name || !regForm.phone || !regForm.licenseNumber || !regForm.rcNumber) return;
+    if (!regForm.name || !regForm.phone || !regForm.licenseNumber || !regForm.rcNumber) {
+      setModalMsg({ type: "error", text: "Please fill in all required personal and vehicle details." });
+      return;
+    }
+
+    // Check that documents are uploaded
+    const missingDocs: string[] = [];
+    if (!docPhoto.url) missingDocs.push("Rider Photo");
+    if (!docLicense.url) missingDocs.push("Driving License");
+    if (!docRc.url) missingDocs.push("Vehicle RC");
+    if (!docAadhaarFront.url) missingDocs.push("Aadhaar Front");
+    if (!docAadhaarBack.url) missingDocs.push("Aadhaar Back");
+
+    if (missingDocs.length > 0) {
+      setModalMsg({
+        type: "error",
+        text: `Please upload all required KYC documents matching the branch onboarding process: ${missingDocs.join(", ")}`,
+      });
+      return;
+    }
+
     setActionLoading(true);
     setModalMsg(null);
+
+    const documents = [
+      { type: "photo", url: docPhoto.url },
+      { type: "license", url: docLicense.url },
+      { type: "rc", url: docRc.url },
+      { type: "aadhaarFront", url: docAadhaarFront.url },
+      { type: "aadhaarBack", url: docAadhaarBack.url },
+    ];
+
     try {
       const res = await registerNewRider({
         name: regForm.name.trim(),
@@ -111,8 +186,11 @@ const OperatorRiders = () => {
         gender: regForm.gender,
         licenseNumber: regForm.licenseNumber.trim(),
         rcNumber: regForm.rcNumber.trim(),
+        documents,
       });
-      setModalMsg({ type: "success", text: res.message || "Rider successfully registered!" });
+      setModalMsg({ type: "success", text: res.message || "Rider successfully registered with verified documents!" });
+
+      // Reset form
       setRegForm({
         name: "",
         phone: "",
@@ -121,6 +199,12 @@ const OperatorRiders = () => {
         licenseNumber: "",
         rcNumber: "",
       });
+      setDocPhoto(emptyDoc());
+      setDocLicense(emptyDoc());
+      setDocRc(emptyDoc());
+      setDocAadhaarFront(emptyDoc());
+      setDocAadhaarBack(emptyDoc());
+
       fetchRiderList();
       setTimeout(() => {
         setShowModal(false);
@@ -404,8 +488,8 @@ const OperatorRiders = () => {
       {/* Onboard Rider Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-gray-100 animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl border border-gray-100 animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 flex-shrink-0">
               <h3 className="font-bold text-gray-900 flex items-center gap-2">
                 <Bike size={19} className="text-teal-600" />
                 Add Delivery Partner to Fleet
@@ -422,7 +506,7 @@ const OperatorRiders = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-100 mt-4">
+            <div className="flex border-b border-gray-100 mt-3 flex-shrink-0">
               <button
                 onClick={() => {
                   setModalTab("link");
@@ -449,13 +533,13 @@ const OperatorRiders = () => {
                 }`}
               >
                 <UserPlus size={14} />
-                Register New Rider
+                Register New Rider (Branch App Process)
               </button>
             </div>
 
             {modalMsg && (
               <div
-                className={`mt-4 p-3 rounded-xl text-xs flex items-center gap-2 ${
+                className={`mt-3 p-3 rounded-xl text-xs flex items-center gap-2 flex-shrink-0 ${
                   modalMsg.type === "success"
                     ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                     : "bg-red-50 text-red-800 border border-red-200"
@@ -473,7 +557,7 @@ const OperatorRiders = () => {
             {modalTab === "link" ? (
               <form onSubmit={handleLinkSubmit} className="mt-4 space-y-4">
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Enter the registered mobile number of a delivery rider already on the DoKirana platform to link them to your territory.
+                  Enter the registered mobile number of a delivery rider already on the DoKirana platform to link them to your territory fleet.
                 </p>
 
                 <div>
@@ -515,87 +599,148 @@ const OperatorRiders = () => {
                 </div>
               </form>
             ) : (
-              <form onSubmit={handleRegisterSubmit} className="mt-4 space-y-3.5 max-h-[65vh] overflow-y-auto pr-1">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Ramesh Kumar"
-                    value={regForm.name}
-                    onChange={(e) => setRegForm({ ...regForm, name: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Mobile Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      maxLength={10}
-                      placeholder="10-digit number"
-                      value={regForm.phone}
-                      onChange={(e) => setRegForm({ ...regForm, phone: e.target.value.replace(/\D/g, "") })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-mono focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
-                    />
-                  </div>
+              <form onSubmit={handleRegisterSubmit} className="mt-4 space-y-4 overflow-y-auto pr-1 flex-1">
+                {/* Personal & Vehicle Info */}
+                <div className="bg-gray-50/70 p-4 rounded-xl border border-gray-200/70 space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                    1. Personal & Vehicle Information
+                  </h4>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Age *</label>
-                    <input
-                      type="number"
-                      min={18}
-                      max={65}
-                      required
-                      value={regForm.age}
-                      onChange={(e) => setRegForm({ ...regForm, age: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Driving License Number *</label>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">Full Name *</label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. TS0920210001234"
-                      value={regForm.licenseNumber}
-                      onChange={(e) => setRegForm({ ...regForm, licenseNumber: e.target.value.toUpperCase() })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-mono uppercase focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
+                      placeholder="e.g. Ramesh Kumar"
+                      value={regForm.name}
+                      onChange={(e) => setRegForm({ ...regForm, name: e.target.value })}
+                      className="w-full px-3.5 py-2 bg-white rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Vehicle RC Number *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. TS09EA1234"
-                      value={regForm.rcNumber}
-                      onChange={(e) => setRegForm({ ...regForm, rcNumber: e.target.value.toUpperCase() })}
-                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-mono uppercase focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Mobile Number *</label>
+                      <input
+                        type="tel"
+                        required
+                        maxLength={10}
+                        placeholder="10-digit number"
+                        value={regForm.phone}
+                        onChange={(e) => setRegForm({ ...regForm, phone: e.target.value.replace(/\D/g, "") })}
+                        className="w-full px-3.5 py-2 bg-white rounded-xl border border-gray-200 text-xs font-mono focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Age *</label>
+                      <input
+                        type="number"
+                        min={18}
+                        max={65}
+                        required
+                        value={regForm.age}
+                        onChange={(e) => setRegForm({ ...regForm, age: e.target.value })}
+                        className="w-full px-3.5 py-2 bg-white rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Gender *</label>
+                      <select
+                        value={regForm.gender}
+                        onChange={(e) => setRegForm({ ...regForm, gender: e.target.value as "male" | "female" | "other" })}
+                        className="w-full px-3.5 py-2 bg-white rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
+                      >
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Driving License Number *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. TS0920210001234"
+                        value={regForm.licenseNumber}
+                        onChange={(e) => setRegForm({ ...regForm, licenseNumber: e.target.value.toUpperCase() })}
+                        className="w-full px-3.5 py-2 bg-white rounded-xl border border-gray-200 text-xs font-mono uppercase focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Vehicle RC Number *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. TS09EA1234"
+                        value={regForm.rcNumber}
+                        onChange={(e) => setRegForm({ ...regForm, rcNumber: e.target.value.toUpperCase() })}
+                        className="w-full px-3.5 py-2 bg-white rounded-xl border border-gray-200 text-xs font-mono uppercase focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Gender *</label>
-                  <select
-                    value={regForm.gender}
-                    onChange={(e) => setRegForm({ ...regForm, gender: e.target.value as "male" | "female" | "other" })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none bg-white"
-                  >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
+                {/* 5 Required Documents matching dkbranch app */}
+                <div className="bg-gray-50/70 p-4 rounded-xl border border-gray-200/70 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                      2. KYC Documents (Exact DkBranch Process)
+                    </h4>
+                    <span className="text-[11px] text-teal-700 font-medium">All 5 documents required</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* 1. Rider Photo */}
+                    <DocUploadBox
+                      label="1. Rider Photo / Selfie *"
+                      docType="deliveryPartnerPhoto"
+                      docState={docPhoto}
+                      onFileSelect={(file) => uploadDoc(file, "deliveryPartnerPhoto", setDocPhoto)}
+                    />
+
+                    {/* 2. License Image */}
+                    <DocUploadBox
+                      label="2. Driving License Photo *"
+                      docType="licenseImage"
+                      docState={docLicense}
+                      onFileSelect={(file) => uploadDoc(file, "licenseImage", setDocLicense)}
+                    />
+
+                    {/* 3. RC Image */}
+                    <DocUploadBox
+                      label="3. Vehicle RC Photo *"
+                      docType="rcImage"
+                      docState={docRc}
+                      onFileSelect={(file) => uploadDoc(file, "rcImage", setDocRc)}
+                    />
+
+                    {/* 4. Aadhaar Front */}
+                    <DocUploadBox
+                      label="4. Aadhaar Card (Front) *"
+                      docType="aadhaarFront"
+                      docState={docAadhaarFront}
+                      onFileSelect={(file) => uploadDoc(file, "aadhaarFront", setDocAadhaarFront)}
+                    />
+
+                    {/* 5. Aadhaar Back */}
+                    <div className="sm:col-span-2">
+                      <DocUploadBox
+                        label="5. Aadhaar Card (Back) *"
+                        docType="aadhaarBack"
+                        docState={docAadhaarBack}
+                        onFileSelect={(file) => uploadDoc(file, "aadhaarBack", setDocAadhaarBack)}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-gray-100">
+                <div className="flex justify-end gap-3 pt-3 border-t border-gray-100 flex-shrink-0">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
@@ -605,11 +750,22 @@ const OperatorRiders = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={actionLoading || !regForm.name || regForm.phone.length !== 10 || !regForm.licenseNumber || !regForm.rcNumber}
+                    disabled={
+                      actionLoading ||
+                      !regForm.name ||
+                      regForm.phone.length !== 10 ||
+                      !regForm.licenseNumber ||
+                      !regForm.rcNumber ||
+                      !docPhoto.url ||
+                      !docLicense.url ||
+                      !docRc.url ||
+                      !docAadhaarFront.url ||
+                      !docAadhaarBack.url
+                    }
                     className="flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 disabled:opacity-50 rounded-xl transition-colors shadow-sm"
                   >
                     {actionLoading && <Loader2 size={14} className="animate-spin" />}
-                    {actionLoading ? "Registering..." : "Complete Registration"}
+                    {actionLoading ? "Registering..." : "Submit & Complete Onboarding"}
                   </button>
                 </div>
               </form>
@@ -646,6 +802,86 @@ const OperatorRiders = () => {
             </div>
           </div>
         </div>
+      )}
+    </div>
+  );
+};
+
+// Document Upload Box Component
+interface DocBoxProps {
+  label: string;
+  docType: string;
+  docState: DocUploadState;
+  onFileSelect: (file: File) => void;
+}
+
+const DocUploadBox = ({ label, docType, docState, onFileSelect }: DocBoxProps) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onFileSelect(file);
+    }
+  };
+
+  return (
+    <div className="bg-white p-3 rounded-xl border border-gray-200">
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="text-xs font-semibold text-gray-700">{label}</label>
+        {docState.url && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+            <CheckCircle2 size={12} />
+            Uploaded
+          </span>
+        )}
+      </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*,application/pdf"
+        className="hidden"
+        onChange={handleChange}
+      />
+
+      {docState.uploading ? (
+        <div className="h-14 rounded-lg bg-gray-50 flex items-center justify-center gap-2 text-xs text-teal-700">
+          <Loader2 size={14} className="animate-spin" />
+          <span>Uploading to GCP...</span>
+        </div>
+      ) : docState.url ? (
+        <div className="h-14 rounded-lg bg-emerald-50/50 border border-emerald-200 px-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <FileCheck size={16} className="text-emerald-600 flex-shrink-0" />
+            <span className="text-[11px] font-mono text-emerald-800 truncate">
+              {docState.file?.name || `${docType}.jpg`}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="text-[11px] text-teal-700 font-semibold hover:underline flex-shrink-0 ml-2"
+          >
+            Change
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="w-full h-14 rounded-lg border border-dashed border-gray-300 hover:border-teal-600 bg-gray-50/50 hover:bg-teal-50/30 flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-teal-700 transition-colors"
+        >
+          <Upload size={14} />
+          <span>Select File</span>
+        </button>
+      )}
+
+      {docState.error && (
+        <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1">
+          <AlertCircle size={11} />
+          {docState.error}
+        </p>
       )}
     </div>
   );
