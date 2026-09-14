@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Operator Service
  * All API calls for the Operator portal (self-registration, auth, dashboard).
  * Uses operatorAccessToken - never touches the admin accessToken.
@@ -48,6 +48,9 @@ async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<
   const res = await fetch(`${BASE}${endpoint}`, { ...options, headers });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
+  if (data && typeof data.status === "string" && data.status.toUpperCase() === "SUCCESS") {
+    data.status = "success";
+  }
   return data;
 }
 

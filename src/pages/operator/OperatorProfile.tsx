@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User,
@@ -33,10 +33,10 @@ const OperatorProfile = () => {
       setError(null);
       try {
         const res = await getProfile();
-        if (res.status === "success" && res.operator) {
+        if ((res.status?.toLowerCase() === "success") && res.operator) {
           setProfile(res.operator);
         } else {
-          setError("Failed to load operator profile");
+          setError((res as { message?: string }).message || "Failed to load operator profile");
         }
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Failed to load profile";

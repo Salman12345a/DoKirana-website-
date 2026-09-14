@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Truck,
   Bike,
@@ -50,12 +50,12 @@ const OperatorDispatch = () => {
         getRiders(),
       ]);
 
-      if (ordersRes.status === "fulfilled" && ordersRes.value.status === "success") {
+      if (ordersRes.status === "fulfilled" && ordersRes.value.status?.toLowerCase() === "success") {
         setFoodOrders(ordersRes.value.activeOrders?.foodOrders || []);
         setKiranaOrders(ordersRes.value.activeOrders?.kiranaOrders || []);
       }
 
-      if (ridersRes.status === "fulfilled" && ridersRes.value.status === "success") {
+      if (ridersRes.status === "fulfilled" && ridersRes.value.status?.toLowerCase() === "success") {
         setRiders(ridersRes.value.riders || []);
       }
     } catch (err: unknown) {

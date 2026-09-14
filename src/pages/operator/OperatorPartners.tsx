@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Users,
   Store,
@@ -37,10 +37,10 @@ const OperatorPartners = () => {
       if (typeFilter) params.type = typeFilter;
       if (statusFilter) params.status = statusFilter;
       const res = await getPartners(params);
-      if (res.status === "success") {
+      if (res.status?.toLowerCase() === "success") {
         setPartners(res.partners || []);
       } else {
-        setError("Failed to fetch partners");
+        setError((res as { message?: string }).message || "Failed to fetch partners");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to load partners";

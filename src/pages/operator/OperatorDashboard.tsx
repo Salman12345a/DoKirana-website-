@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   MapPin,
@@ -31,10 +31,10 @@ const OperatorDashboard = () => {
     setError(null);
     try {
       const res = await getDashboard();
-      if (res.status === "success" && res.dashboard) {
+      if ((res.status?.toLowerCase() === "success") && res.dashboard) {
         setData(res.dashboard);
       } else {
-        setError("Failed to load dashboard data");
+        setError((res as { message?: string }).message || "Failed to load dashboard data");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to load dashboard data";

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   TrendingUp,
   IndianRupee,
@@ -34,11 +34,11 @@ const OperatorEarnings = () => {
       if (payoutStatusFilter) params.payoutStatus = payoutStatusFilter;
 
       const res = await getEarnings(params);
-      if (res.status === "success") {
+      if (res.status?.toLowerCase() === "success") {
         setEntries(res.entries || []);
         setSummary(res.summary || null);
       } else {
-        setError("Failed to load earnings ledger");
+        setError((res as { message?: string }).message || "Failed to load earnings ledger");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to load earnings";

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Bike,
   Search,
@@ -25,10 +25,10 @@ const OperatorRiders = () => {
     setError(null);
     try {
       const res = await getRiders();
-      if (res.status === "success") {
+      if (res.status?.toLowerCase() === "success") {
         setRiders(res.riders || []);
       } else {
-        setError("Failed to load rider fleet");
+        setError((res as { message?: string }).message || "Failed to load rider fleet");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to load riders";
