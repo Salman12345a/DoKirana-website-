@@ -57,6 +57,14 @@ const config = {
       activeOrders: '/api/operators-club/dispatch/active-orders',
       assignRider: '/api/operators-club/dispatch/assign-rider',
     },
+
+    // ── Operators Club Merchant / Partner API ──
+    operatorsClubPartner: {
+      territory: '/api/operators-club/partner/territory',
+      status: '/api/operators-club/partner/status',
+      link: '/api/operators-club/partner/link',
+      unlink: '/api/operators-club/partner/unlink',
+    },
   },
   
   // Authentication

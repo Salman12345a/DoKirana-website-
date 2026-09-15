@@ -153,7 +153,88 @@ export const getPartners = (params?: { type?: string; status?: string }) => {
   );
 };
 export const linkPartner = (subscriberPhone: string) =>
-  apiCall(config.api.operator.linkPartner, { method: "POST", body: JSON.stringify({ subscriberPhone }) });
+  apiCall<{ status: string; message: string; subscription?: Partner }>(
+    config.api.operator.linkPartner,
+    { method: "POST", body: JSON.stringify({ subscriberPhone }) }
+  );
+
+// ── Store Merchant Operators Club Linking APIs ──
+export interface TerritoryOperatorResponse {
+  status: string;
+  operatorAvailable: boolean;
+  message?: string;
+  storePincode?: string;
+  operator?: {
+    _id: string;
+    operatorId: string;
+    name: string;
+    phone: string;
+    city: string;
+    area: string;
+    pincode: string;
+    activeRiderCount: number;
+    activeSubscriberCount: number;
+  };
+}
+
+export interface StorePartnerStatusResponse {
+  status: string;
+  store: {
+    _id: string;
+    name: string;
+    type: "kirana_branch" | "restaurant";
+    phone: string;
+    pincode?: string;
+    deliveryMode: string;
+  };
+  isLinked: boolean;
+  subscription?: {
+    _id: string;
+    status: string;
+    currentPeriodStart: string;
+    currentPeriodEnd: string;
+    gracePeriodEndDate?: string;
+    daysRemaining: number;
+    isGracePeriod: boolean;
+    monthlyRate: number;
+  } | null;
+  operator?: {
+    _id: string;
+    operatorId: string;
+    name: string;
+    phone: string;
+    city: string;
+    area: string;
+    pincode: string;
+  } | null;
+}
+
+export const getTerritoryOperator = (pincode?: string) => {
+  const qs = pincode ? `?pincode=${pincode}` : "";
+  return apiCall<TerritoryOperatorResponse>(
+    `${(config.api as any).operatorsClubPartner.territory}${qs}`
+  );
+};
+
+export const getStorePartnerStatus = () => {
+  return apiCall<StorePartnerStatusResponse>(
+    (config.api as any).operatorsClubPartner.status
+  );
+};
+
+export const linkStoreToOperator = (operatorId?: string) => {
+  return apiCall<{ status: string; message: string; deliveryMode: string }>(
+    (config.api as any).operatorsClubPartner.link,
+    { method: "POST", body: JSON.stringify({ operatorId }) }
+  );
+};
+
+export const unlinkStoreFromOperator = () => {
+  return apiCall<{ status: string; message: string; deliveryMode: string }>(
+    (config.api as any).operatorsClubPartner.unlink,
+    { method: "POST" }
+  );
+};
 
 export interface LedgerEntry {
   _id: string; eventType: string; grossAmount: number;
