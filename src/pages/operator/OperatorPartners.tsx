@@ -174,18 +174,15 @@ const OperatorPartners = () => {
             <Users size={24} />
           </div>
           <h3 className="font-bold text-gray-900">No Partners Found</h3>
-          <p className="text-xs text-gray-500 mt-1 mb-5">
+          <p className="text-xs text-gray-500 mt-1 mb-4">
             {searchTerm || typeFilter || statusFilter
               ? "No partners match your selected filters."
-              : "You haven't linked any kirana stores or restaurants yet. Start building your network to earn ₹299/mo per partner."}
+              : "You haven't linked any kirana stores or restaurants yet. Local merchants connect directly to your Operators Club through their DoKirana Branch and Eats apps."}
           </p>
-          <button
-            onClick={() => setShowLinkModal(true)}
-            className="inline-flex items-center gap-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all"
-          >
-            <Plus size={14} />
-            Link Your First Partner
-          </button>
+          <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-800 border border-teal-200 px-3.5 py-2 rounded-xl text-xs font-medium">
+            <Info size={14} className="text-teal-600" />
+            <span>Merchants link via DoKirana Branch & Eats apps</span>
+          </div>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
