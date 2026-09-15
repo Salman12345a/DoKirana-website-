@@ -237,31 +237,14 @@ const OperatorRiders = () => {
     }
   };
 
-  // A delivery partner can only be "On Delivery" or "Available" if activated by admin (isActivated === true)
-  const isRiderActivated = (r: Rider) => Boolean(r.isActivated);
-
-  const isRiderOnDelivery = (r: Rider) =>
-    isRiderActivated(r) && Array.isArray(r.currentOrders) && r.currentOrders.length > 0;
-
-  const isRiderAvailable = (r: Rider) =>
-    isRiderActivated(r) &&
-    (r.status === "approved" || !r.status) &&
-    (r.isAvailable ?? r.availability ?? true) &&
-    !isRiderOnDelivery(r);
-
-  const isRiderOffline = (r: Rider) =>
-    isRiderActivated(r) &&
-    (r.status === "approved" || !r.status) &&
-    !(r.isAvailable ?? r.availability ?? true) &&
-    !isRiderOnDelivery(r);
-
-  const isRiderPending = (r: Rider) =>
-    r.status === "pending" || (!isRiderActivated(r) && r.status !== "rejected");
+  // If approved: show Available. Once isActivated is true: turn it to On Delivery.
+  const isRiderOnDelivery = (r: Rider) => (r.status === "approved" || !r.status) && Boolean(r.isActivated);
+  const isRiderAvailable = (r: Rider) => (r.status === "approved" || !r.status) && !r.isActivated;
+  const isRiderPending = (r: Rider) => r.status === "pending";
 
   const pendingCount = riders.filter(isRiderPending).length;
   const availableCount = riders.filter(isRiderAvailable).length;
-  const busyCount = riders.filter(isRiderOnDelivery).length;
-  const offlineCount = riders.filter(isRiderOffline).length;
+  const onDeliveryCount = riders.filter(isRiderOnDelivery).length;
 
   const filteredRiders = riders.filter((r) => {
     const term = search.toLowerCase();
@@ -334,7 +317,7 @@ const OperatorRiders = () => {
 
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500 font-medium">Available (Active)</p>
+            <p className="text-xs text-gray-500 font-medium">Available (Approved)</p>
             <p className="text-2xl font-bold text-emerald-600 mt-0.5">{availableCount}</p>
           </div>
           <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -344,10 +327,10 @@ const OperatorRiders = () => {
 
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs text-gray-500 font-medium">Busy / On Delivery</p>
-            <p className="text-2xl font-bold text-slate-600 mt-0.5">{busyCount}</p>
+            <p className="text-xs text-gray-500 font-medium">On Delivery (Activated)</p>
+            <p className="text-2xl font-bold text-blue-600 mt-0.5">{onDeliveryCount}</p>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <Truck size={20} />
           </div>
         </div>
@@ -401,11 +384,11 @@ const OperatorRiders = () => {
             onClick={() => setFilterStatus("busy")}
             className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               filterStatus === "busy"
-                ? "bg-slate-700 text-white font-semibold"
+                ? "bg-blue-600 text-white font-semibold"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            Busy ({busyCount})
+            On Delivery ({onDeliveryCount})
           </button>
         </div>
       </div>
@@ -508,26 +491,17 @@ const OperatorRiders = () => {
                             <Clock size={12} className="text-amber-600" />
                             Pending Verification
                           </span>
-                        ) : !isRiderActivated(rider) ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                            <Clock size={12} className="text-amber-600" />
-                            Pending Activation
-                          </span>
-                        ) : isRiderOnDelivery(rider) ? (
+                        ) : rider.isActivated ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                             <Truck size={12} className="text-blue-600" />
                             On Delivery
                           </span>
-                        ) : isRiderAvailable(rider) ? (
+                        ) : (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <CheckCircle2 size={12} className="text-emerald-600" />
                             Available
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                            Offline
                           </span>
                         )}
                       </td>
