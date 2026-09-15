@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Shield,
@@ -516,7 +516,7 @@ const OperatorApply = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Salman Ahmed Khan"
+                  placeholder="Rajesh"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none"
