@@ -89,6 +89,15 @@ const OperatorApply = () => {
   const [phoneVerified, setPhoneVerified] = useState(Boolean(savedDraft.phoneVerified && savedDraft.phone));
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpError, setOtpError] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
 
   // Territory
   const [pincode, setPincode] = useState(savedDraft.pincode || "");
@@ -228,12 +237,16 @@ const OperatorApply = () => {
       setOtpError("Enter a valid 10-digit mobile number");
       return;
     }
+    if (otpSent && resendCooldown > 0) {
+      return;
+    }
     setOtpLoading(true);
     setOtpError(null);
     try {
       const res = await sendOperatorOTP(phone);
       if (res.sessionId) setSessionId(res.sessionId);
       setOtpSent(true);
+      setResendCooldown(60);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to send OTP";
       setOtpError(message);
@@ -543,6 +556,7 @@ const OperatorApply = () => {
                         setPhone(e.target.value.replace(/\D/g, ""));
                         setPhoneVerified(false);
                         setOtpSent(false);
+                        setResendCooldown(0);
                       }}
                       className="w-full pl-14 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white font-mono focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 outline-none disabled:bg-gray-100"
                     />
@@ -552,11 +566,15 @@ const OperatorApply = () => {
                     <button
                       type="button"
                       onClick={handleSendOTP}
-                      disabled={otpLoading || phone.length !== 10}
-                      className="bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-sm"
+                      disabled={otpLoading || phone.length !== 10 || (otpSent && resendCooldown > 0)}
+                      className="bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-sm whitespace-nowrap"
                     >
                       {otpLoading && <Loader2 size={13} className="animate-spin" />}
-                      {otpSent ? "Resend OTP" : "Send OTP"}
+                      {otpSent
+                        ? resendCooldown > 0
+                          ? `Resend in ${resendCooldown}s`
+                          : "Resend OTP"
+                        : "Send OTP"}
                     </button>
                   ) : (
                     <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-200">
