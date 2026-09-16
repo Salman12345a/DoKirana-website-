@@ -47,7 +47,20 @@ async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<
   if (token) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${BASE}${endpoint}`, { ...options, headers });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
+  if (!res.ok) {
+    const message = data.message || `Request failed: ${res.status}`;
+    const isProtectedOperatorRequest = endpoint.startsWith("/api/operator/me/");
+    const isInvalidOperatorSession =
+      isProtectedOperatorRequest &&
+      (res.status === 401 || res.status === 403 || message.toLowerCase().includes("operator not found"));
+
+    if (isInvalidOperatorSession) {
+      clearOperatorSession();
+      window.location.replace("/operator/login");
+    }
+
+    throw new Error(message);
+  }
   if (data && typeof data.status === "string" && data.status.toUpperCase() === "SUCCESS") {
     data.status = "success";
   }

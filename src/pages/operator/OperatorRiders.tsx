@@ -413,7 +413,7 @@ const OperatorRiders = () => {
           </div>
           <h3 className="font-bold text-gray-900">No Riders in Fleet</h3>
           <p className="text-xs text-gray-500 mt-1">
-            {search || filterAvailability !== "all"
+            {search || filterStatus !== "all"
               ? "No riders match your search criteria."
               : "Onboard riders to your territory fleet to dispatch orders."}
           </p>
