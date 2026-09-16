@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   User,
   Phone,
@@ -9,23 +8,19 @@ import {
   CreditCard,
   ShieldCheck,
   Calendar,
-  LogOut,
   Loader2,
   AlertCircle,
   Users,
 } from "lucide-react";
 import {
   getProfile,
-  clearOperatorSession,
   OperatorProfile as ProfileType,
 } from "../../services/operatorService";
 
 const OperatorProfile = () => {
-  const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -48,11 +43,6 @@ const OperatorProfile = () => {
 
     fetchProfileData();
   }, []);
-
-  const handleLogout = () => {
-    clearOperatorSession();
-    navigate("/operator/login");
-  };
 
   if (loading) {
     return (
@@ -90,14 +80,6 @@ const OperatorProfile = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowLogoutConfirm(true)}
-            className="flex items-center gap-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-4 py-2 rounded-xl border border-rose-200 transition-colors self-start sm:self-auto"
-          >
-            <LogOut size={14} />
-            Sign Out
-          </button>
         </div>
 
         {error && (
@@ -179,39 +161,6 @@ const OperatorProfile = () => {
         </div>
       </div>
 
-      {/* Sign Out Confirmation Modal */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 max-w-sm w-full p-6 text-center animate-in fade-in zoom-in-95 duration-150">
-            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-100">
-              <AlertTriangle size={24} />
-            </div>
-            <h3 className="text-base font-bold text-gray-900 mb-1">
-              Sign Out Confirmation
-            </h3>
-            <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-              Are you sure you want to sign out of the Operator Dashboard? You will need to verify with OTP to log back in.
-            </p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-sm transition-colors flex items-center justify-center gap-1.5"
-              >
-                <LogOut size={14} />
-                Yes, Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
