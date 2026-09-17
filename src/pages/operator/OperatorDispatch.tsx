@@ -570,12 +570,12 @@ const OperatorDispatch = () => {
 
                         <span
                           className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                            rider.isAvailable
+                            (rider.availability || rider.isAvailable)
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {rider.isAvailable ? "Available" : "Busy"}
+                          {(rider.availability || rider.isAvailable) ? "On Duty" : "Off Duty"}
                         </span>
                       </div>
                     ))}
