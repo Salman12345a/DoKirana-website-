@@ -106,6 +106,10 @@ const OperatorDispatch = () => {
     }
   };
 
+  const onlineRidersCount = riders.filter(
+    (r) => (r.availability || r.isAvailable) && r.status === "approved"
+  ).length;
+
   const totalOrders = foodOrders.length + kiranaOrders.length;
 
   return (
@@ -146,6 +150,56 @@ const OperatorDispatch = () => {
           </button>
         </div>
       </div>
+
+      {/* Fleet Availability Status Banner (Image 2) */}
+      {onlineRidersCount > 0 ? (
+        <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+              <Bike size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-emerald-900">Fleet Active & Ready</span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-200/80 text-emerald-800 font-bold">
+                  {onlineRidersCount} Online
+                </span>
+              </div>
+              <p className="text-xs text-emerald-700 mt-0.5">
+                Automatic Smart Rider Assignment is active across all linked Kirana stores and Restaurants.
+              </p>
+            </div>
+          </div>
+          <span className="self-start sm:self-auto text-[11px] font-semibold text-emerald-800 bg-white/90 px-3 py-1.5 rounded-xl border border-emerald-200 shadow-sm">
+            Auto-Dispatch Active
+          </span>
+        </div>
+      ) : (
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0">
+              <AlertCircle size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-rose-900">Fleet Offline (0 Riders Active)</span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-200 text-rose-800 font-bold">
+                  Delivery Paused
+                </span>
+              </div>
+              <p className="text-xs text-rose-700 mt-0.5">
+                Store deliveries are temporarily paused because 0 riders are online. Orders will queue until a rider logs in.
+              </p>
+            </div>
+          </div>
+          <a
+            href="/operator/riders"
+            className="self-start sm:self-auto text-xs font-bold text-rose-800 bg-white hover:bg-rose-100 px-3.5 py-2 rounded-xl border border-rose-300 transition-colors shadow-sm"
+          >
+            Manage Fleet Roster →
+          </a>
+        </div>
+      )}
 
       {/* Quick Summary Filters */}
       <div className="flex items-center gap-2 border-b border-gray-200 pb-3 text-sm">
@@ -258,21 +312,78 @@ const OperatorDispatch = () => {
                       <Clock size={13} />
                       Placed: {new Date(order.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                     </div>
+
+                    {/* Smart Dispatched Rider / Queued Status */}
+                    {order.deliveryPartner ? (
+                      <div className="bg-purple-50/90 border border-purple-200/80 rounded-xl p-3 text-xs space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-purple-800 font-bold flex items-center gap-1.5">
+                            <UserCheck size={14} className="text-purple-600" />
+                            Assigned Partner
+                          </span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-200/80 text-purple-900 font-bold">
+                            Smart Dispatched
+                          </span>
+                        </div>
+                        <p className="text-gray-900 font-bold text-xs mt-0.5">{order.deliveryPartner.name}</p>
+                        {order.deliveryPartner.phone && (
+                          <a
+                            href={`tel:${order.deliveryPartner.phone}`}
+                            className="text-gray-600 hover:text-purple-700 flex items-center gap-1 font-mono text-[11px]"
+                          >
+                            <Phone size={11} /> {order.deliveryPartner.phone}
+                          </a>
+                        )}
+                      </div>
+                    ) : order.awaitingOperatorRider ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs space-y-1">
+                        <div className="flex items-center justify-between text-amber-800 font-bold">
+                          <span className="flex items-center gap-1">
+                            <AlertCircle size={14} className="text-amber-600" />
+                            Queued (No Riders)
+                          </span>
+                          <span className="text-[10px] bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+                            Awaiting Rider
+                          </span>
+                        </div>
+                        <p className="text-amber-700 text-[11px]">
+                          Order is queued. Will auto-dispatch as soon as a delivery partner logs online.
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
                 <div className="mt-5 pt-3 border-t border-gray-100">
-                  <button
-                    onClick={() => {
-                      setSelectedOrder({ id: order._id || order.orderId, type: "food" });
-                      setSelectedRiderId("");
-                      setAssignResult(null);
-                    }}
-                    className="w-full flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold py-2.5 rounded-xl transition-colors shadow-sm"
-                  >
-                    <Bike size={14} />
-                    Assign Territory Rider
-                  </button>
+                  {order.deliveryPartner ? (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 py-2 px-3 rounded-xl bg-gray-50 border border-gray-200 text-[11px] font-semibold text-gray-700 truncate">
+                        Status: <span className="font-bold text-teal-800 uppercase">{order.status}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedOrder({ id: order._id || order.orderId, type: "food" });
+                          setSelectedRiderId("");
+                          setAssignResult(null);
+                        }}
+                        className="text-xs font-semibold px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors"
+                      >
+                        Re-assign
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSelectedOrder({ id: order._id || order.orderId, type: "food" });
+                        setSelectedRiderId("");
+                        setAssignResult(null);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold py-2.5 rounded-xl transition-colors shadow-sm"
+                    >
+                      <Bike size={14} />
+                      Assign Territory Rider
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -303,25 +414,96 @@ const OperatorDispatch = () => {
                       </span>
                     </div>
 
+                    {order.branch && (
+                      <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 text-xs space-y-1">
+                        <p className="font-bold text-gray-900">{order.branch.name}</p>
+                        {order.branch.address && (
+                          <p className="text-gray-500 line-clamp-1">{order.branch.address}</p>
+                        )}
+                        {order.branch.phone && (
+                          <p className="text-gray-400 flex items-center gap-1 font-mono">
+                            <Phone size={11} /> {order.branch.phone}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
                     <div className="flex items-center gap-1.5 text-xs text-gray-400 pt-1">
                       <Clock size={13} />
                       Placed: {new Date(order.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                     </div>
+
+                    {/* Smart Dispatched Rider / Queued Status */}
+                    {order.deliveryPartner ? (
+                      <div className="bg-purple-50/90 border border-purple-200/80 rounded-xl p-3 text-xs space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-purple-800 font-bold flex items-center gap-1.5">
+                            <UserCheck size={14} className="text-purple-600" />
+                            Assigned Partner
+                          </span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-200/80 text-purple-900 font-bold">
+                            Smart Dispatched
+                          </span>
+                        </div>
+                        <p className="text-gray-900 font-bold text-xs mt-0.5">{order.deliveryPartner.name}</p>
+                        {order.deliveryPartner.phone && (
+                          <a
+                            href={`tel:${order.deliveryPartner.phone}`}
+                            className="text-gray-600 hover:text-purple-700 flex items-center gap-1 font-mono text-[11px]"
+                          >
+                            <Phone size={11} /> {order.deliveryPartner.phone}
+                          </a>
+                        )}
+                      </div>
+                    ) : order.awaitingOperatorRider ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs space-y-1">
+                        <div className="flex items-center justify-between text-amber-800 font-bold">
+                          <span className="flex items-center gap-1">
+                            <AlertCircle size={14} className="text-amber-600" />
+                            Queued (No Riders)
+                          </span>
+                          <span className="text-[10px] bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+                            Awaiting Rider
+                          </span>
+                        </div>
+                        <p className="text-amber-700 text-[11px]">
+                          Order is queued. Will auto-dispatch as soon as a delivery partner logs online.
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
                 <div className="mt-5 pt-3 border-t border-gray-100">
-                  <button
-                    onClick={() => {
-                      setSelectedOrder({ id: order._id, type: "kirana" });
-                      setSelectedRiderId("");
-                      setAssignResult(null);
-                    }}
-                    className="w-full flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold py-2.5 rounded-xl transition-colors shadow-sm"
-                  >
-                    <Bike size={14} />
-                    Assign Territory Rider
-                  </button>
+                  {order.deliveryPartner ? (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 py-2 px-3 rounded-xl bg-gray-50 border border-gray-200 text-[11px] font-semibold text-gray-700 truncate">
+                        Status: <span className="font-bold text-teal-800 uppercase">{order.status}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedOrder({ id: order._id, type: "kirana" });
+                          setSelectedRiderId("");
+                          setAssignResult(null);
+                        }}
+                        className="text-xs font-semibold px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors"
+                      >
+                        Re-assign
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSelectedOrder({ id: order._id, type: "kirana" });
+                        setSelectedRiderId("");
+                        setAssignResult(null);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold py-2.5 rounded-xl transition-colors shadow-sm"
+                    >
+                      <Bike size={14} />
+                      Assign Territory Rider
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

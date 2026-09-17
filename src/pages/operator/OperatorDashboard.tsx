@@ -60,6 +60,31 @@ const OperatorDashboard = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Fleet Offline Alert (Image 2) */}
+      {(data?.riderCount || 0) === 0 && (
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0">
+              <AlertCircle size={22} />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-rose-900">
+                Territory Delivery Alert: 0 Riders Active
+              </h4>
+              <p className="text-xs text-rose-700 mt-0.5">
+                Delivery has been temporarily paused for all your linked Kirana stores and Restaurants. Instruct your delivery partners to log online or register new riders.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/operator/riders"
+            className="self-start sm:self-auto text-xs font-bold text-rose-800 bg-white hover:bg-rose-100 px-4 py-2.5 rounded-xl border border-rose-300 transition-colors shadow-sm whitespace-nowrap"
+          >
+            Manage Fleet Roster →
+          </Link>
+        </div>
+      )}
+
       {/* Territory & Welcome Banner */}
       <div className="bg-gradient-to-r from-teal-800 to-teal-600 rounded-2xl p-6 sm:p-8 text-white shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
@@ -81,6 +106,20 @@ const OperatorDashboard = () => {
             <span className="bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 px-2.5 py-0.5 rounded text-xs font-mono font-bold tracking-wide">
               ID: {data?.operatorId || storedOperator?.operatorId || "DK-OP-1001"}
             </span>
+            {(data?.riderCount || 0) > 0 ? (
+              <span className="inline-flex items-center gap-1.5 bg-emerald-500/30 border border-emerald-400/60 text-emerald-100 px-3 py-0.5 rounded-full text-xs font-semibold backdrop-blur-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+                Fleet Active ({data?.riderCount} Online)
+              </span>
+            ) : (
+              <Link
+                to="/operator/riders"
+                className="inline-flex items-center gap-1.5 bg-rose-500/40 border border-rose-400/70 text-rose-100 px-3 py-0.5 rounded-full text-xs font-bold hover:bg-rose-500/60 transition-colors backdrop-blur-sm"
+              >
+                <AlertCircle size={13} className="text-rose-200" />
+                Fleet Offline (0 Active)
+              </Link>
+            )}
           </div>
         </div>
 

@@ -318,11 +318,35 @@ export interface OperatorProfile {
 export const getProfile = () =>
   apiCall<{ status: string; operator: OperatorProfile }>(config.api.operator.profile);
 
-export interface FoodOrder {
-  _id: string; orderId: string; status: string; createdAt: string;
-  restaurant?: { name: string; address: string; phone: string }; totalPrice: number;
+export interface AssignedRiderInfo {
+  _id: string;
+  name: string;
+  phone: string;
+  vehicleType?: string;
+  currentOrders?: unknown[];
 }
-export interface KiranaOrder { _id: string; status: string; createdAt: string; totalPrice: number; }
+
+export interface FoodOrder {
+  _id: string;
+  orderId: string;
+  status: string;
+  createdAt: string;
+  restaurant?: { name: string; address: string; phone: string };
+  totalPrice: number;
+  deliveryPartner?: AssignedRiderInfo;
+  awaitingOperatorRider?: boolean;
+}
+
+export interface KiranaOrder {
+  _id: string;
+  orderId?: string;
+  status: string;
+  createdAt: string;
+  branch?: { name: string; address: string; phone: string };
+  totalPrice: number;
+  deliveryPartner?: AssignedRiderInfo;
+  awaitingOperatorRider?: boolean;
+}
 export const getActiveOrders = () =>
   apiCall<{ status: string; activeOrders: { foodOrders: FoodOrder[]; kiranaOrders: KiranaOrder[] }; total: number }>(
     config.api.operator.activeOrders
