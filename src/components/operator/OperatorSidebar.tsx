@@ -1,4 +1,4 @@
-﻿import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, Users, Truck, Bike, TrendingUp, User, MapPin
 } from "lucide-react";
@@ -19,9 +19,16 @@ const OperatorSidebar = () => {
   return (
     <aside className="w-64 min-h-screen bg-gradient-to-b from-teal-900 to-teal-800 flex flex-col shadow-xl">
       {/* Logo / Brand */}
-      <div className="px-6 py-6 border-b border-teal-700">
-        <h1 className="text-white text-xl font-bold tracking-tight">DoKirana</h1>
-        <p className="text-teal-300 text-xs mt-0.5 font-medium">Operators Club</p>
+      <div className="px-6 py-5 border-b border-teal-700 flex items-center gap-3">
+        <img
+          src="/assets/Logo.png"
+          alt="DK Point Logo"
+          className="w-10 h-10 object-contain rounded-xl bg-white/10 p-1 shadow-sm"
+        />
+        <div>
+          <h1 className="text-white text-xl font-bold tracking-tight">DK Point</h1>
+          <p className="text-teal-300 text-xs mt-0.5 font-medium">Operators Club</p>
+        </div>
       </div>
 
       {/* Operator info */}

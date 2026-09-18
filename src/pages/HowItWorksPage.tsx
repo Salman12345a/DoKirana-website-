@@ -10,7 +10,7 @@ const HowItWorksPage = () => {
     {
       icon: <Smartphone className="w-12 h-12 text-white" />,
       title: "Download & Register",
-      description: "Download the DoKirana app from the App Store or Google Play and create your account with simple steps."
+      description: "Download the DK Point app from the App Store or Google Play and create your account with simple steps."
     },
     {
       icon: <Store className="w-12 h-12 text-white" />,
@@ -43,7 +43,7 @@ const HowItWorksPage = () => {
     {
       icon: <Smartphone className="w-12 h-12 text-white" />,
       title: "Join the Network",
-      description: "Download the DoKirana Partner app and complete the registration process for your store."
+      description: "Download the DK Point Partner app and complete the registration process for your store."
     },
     {
       icon: <ShieldCheck className="w-12 h-12 text-white" />,
@@ -81,7 +81,7 @@ const HowItWorksPage = () => {
         <section className="pt-28 pb-16 md:pt-36 md:pb-24 bg-dokirana-lighter">
           <div className="container-custom">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-4xl md:text-5xl font-bold text-dokirana-primary mb-6">How DoKirana Works</h1>
+              <h1 className="text-4xl md:text-5xl font-bold text-dokirana-primary mb-6">How DK Point Works</h1>
               <p className="text-lg md:text-xl text-gray-700 mb-6">A detailed look at the process for both customers and store owners.</p>
               <div className="flex justify-center gap-2 items-center text-dokirana-primary">
                 <a href="/" className="hover:underline">Home</a>
@@ -167,7 +167,7 @@ const HowItWorksPage = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Store Owner Process</h2>
               <p className="text-lg max-w-2xl mx-auto">
-                Join the DoKirana network and transform your Kirana store with our simple digital platform.
+                Join the DK Point network and transform your Kirana store with our simple digital platform.
               </p>
             </div>
             

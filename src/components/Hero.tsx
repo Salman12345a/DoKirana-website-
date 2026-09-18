@@ -90,7 +90,7 @@ const Hero = () => {
               <div className="relative z-10 transform group-hover:scale-105 transition-transform duration-500">
                 <img 
                   src="/lovable-uploads/phone.png" 
-                  alt="DoKirana Mobile App Interface" 
+                  alt="DK Point Mobile App Interface" 
                   className="w-full max-w-lg"
                 />
                 

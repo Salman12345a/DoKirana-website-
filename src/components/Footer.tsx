@@ -9,8 +9,15 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <h3 className="text-xl font-bold mb-4">DoKirana</h3>
-            <p className="mb-6">Your neighborhood Kirana stores, now in your pocket. Connecting customers with local stores for convenient shopping with a community touch.</p>
+            <div className="flex items-center gap-3 mb-4">
+              <img
+                src="/assets/Logo.png"
+                alt="DK Point Logo"
+                className="w-10 h-10 object-contain rounded-xl bg-white/10 p-1 shadow-sm"
+              />
+              <h3 className="text-2xl font-extrabold tracking-tight">DK Point</h3>
+            </div>
+            <p className="mb-6 text-gray-200 leading-relaxed">Your neighborhood Kirana stores, now in your pocket. Connecting customers with local stores for convenient shopping with a community touch.</p>
             <div className="flex space-x-4">
               <a href="https://www.instagram.com/dokirana186org?utm_source=qr&igsh=dGs2M2llb2I1ZW5l" className="hover:text-dokirana-light transition-colors" aria-label="Instagram">
                 <Instagram size={20} />
@@ -72,7 +79,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; {new Date().getFullYear()} DoKirana. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} DK Point. All rights reserved.</p>
             <div className="flex flex-wrap space-x-4 mt-4 md:mt-0">
               <Link to="/cancellations-and-refunds" className="hover:text-dokirana-light transition-colors text-sm">Cancellations & Refunds</Link>
               <span className="text-gray-500">|</span>

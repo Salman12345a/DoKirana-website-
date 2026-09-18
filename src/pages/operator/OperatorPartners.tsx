@@ -71,7 +71,7 @@ const OperatorPartners = () => {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-medium">
             <Info size={14} className="text-emerald-600" />
-            <span>Partners link directly from DoKirana Branch & Eats apps</span>
+            <span>Partners link directly from DK Point Branch & Eats apps</span>
           </div>
           <button
             onClick={fetchPartnerList}
@@ -177,11 +177,11 @@ const OperatorPartners = () => {
           <p className="text-xs text-gray-500 mt-1 mb-4">
             {searchTerm || typeFilter || statusFilter
               ? "No partners match your selected filters."
-              : "You haven't linked any kirana stores or restaurants yet. Local merchants connect directly to your Operators Club through their DoKirana Branch and Eats apps."}
+              : "You haven't linked any kirana stores or restaurants yet. Local merchants connect directly to your Operators Club through their DK Point Branch and Eats apps."}
           </p>
           <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-800 border border-teal-200 px-3.5 py-2 rounded-xl text-xs font-medium">
             <Info size={14} className="text-teal-600" />
-            <span>Merchants link via DoKirana Branch & Eats apps</span>
+            <span>Merchants link via DK Point Branch & Eats apps</span>
           </div>
         </div>
       ) : (

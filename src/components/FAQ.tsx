@@ -30,26 +30,26 @@ const FAQ = () => {
   const faqs = [
     // 🧾 General FAQs
     {
-      question: "What is DoKirana?",
-      answer: "DoKirana is a local online platform connecting nearby Kirana stores with customers for fast and convenient grocery delivery."
+      question: "What is DK Point?",
+      answer: "DK Point is a local online platform connecting nearby Kirana stores with customers for fast and convenient grocery delivery."
     },
     {
-      question: "How does DoKirana work?",
+      question: "How does DK Point work?",
       answer: "Customers place orders via the app, local Kirana stores fulfill them, and delivery partners handle home deliveries."
     },
     {
-      question: "Where is DoKirana available?",
-      answer: "Currently, DoKirana is serving Hyderabad. We're expanding to more localities soon."
+      question: "Where is DK Point available?",
+      answer: "Currently, DK Point is serving Hyderabad. We're expanding to more localities soon."
     },
     {
-      question: "What makes DoKirana different from other apps?",
+      question: "What makes DK Point different from other apps?",
       answer: "We focus on empowering local stores, provide fast deliveries, and ensure transparent pricing with no hidden costs."
     },
 
     // 👥 Customer FAQs
     {
       question: "How do I place an order?",
-      answer: "Open the DoKirana app, select your location, choose a store, add products to your cart, and proceed to checkout."
+      answer: "Open the DK Point app, select your location, choose a store, add products to your cart, and proceed to checkout."
     },
     {
       question: "Can I choose a specific store?",
@@ -78,8 +78,8 @@ const FAQ = () => {
 
     // 🏪 Kirana Store Owner FAQs
     {
-      question: "How can I register my store on DoKirana?",
-      answer: "Download the DoKirana Branch app which is available on PlayStore and complete the registration form. Our team will verify and approve your store."
+      question: "How can I register my store on DK Point?",
+      answer: "Download the DK Point Branch app which is available on PlayStore and complete the registration form. Our team will verify and approve your store."
     },
     {
       question: "Is there any onboarding fee?",
@@ -91,7 +91,7 @@ const FAQ = () => {
     },
     {
       question: "Can I manage delivery myself?",
-      answer: "Yes. You can handle delivery independently or request a delivery partner from DoKirana Branch App."
+      answer: "Yes. You can handle delivery independently or request a delivery partner from DK Point Branch App."
     },
     {
       question: "How do I receive payments?",
@@ -105,7 +105,7 @@ const FAQ = () => {
     // 🛵 Delivery Partner FAQs
     {
       question: "How can I become a delivery partner?",
-      answer: "Register through the DoKirana Branch app. After approval, you’ll start receiving delivery requests."
+      answer: "Register through the DK Point Branch app. After approval, you’ll start receiving delivery requests."
     },
     {
       question: "What documents are needed for registration?",
@@ -128,7 +128,7 @@ const FAQ = () => {
     },
 
     {
-      question: "How do I contact DoKirana support?",
+      question: "How do I contact DK Point support?",
       answer: "Use the in-app chat or email us at dokiranaorg@gmail.com."
     }
     
@@ -140,7 +140,7 @@ const FAQ = () => {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-dokirana-primary mb-4">Frequently Asked Questions</h2>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            Got questions about DoKirana? Find answers to the most common questions below.
+            Got questions about DK Point? Find answers to the most common questions below.
           </p>
         </div>
         

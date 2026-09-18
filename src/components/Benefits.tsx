@@ -29,9 +29,9 @@ const Benefits = () => {
     <section className="section-padding gradient-bg text-white">
       <div className="container-custom">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose DoKirana</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose DK Point</h2>
           <p className="text-lg max-w-2xl mx-auto">
-            DoKirana combines the personal touch of neighborhood shopping with modern digital convenience.
+            DK Point combines the personal touch of neighborhood shopping with modern digital convenience.
           </p>
         </div>
         

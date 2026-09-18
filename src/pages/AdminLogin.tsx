@@ -192,8 +192,16 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-dokirana-primary text-center mb-6">Admin Login</h1>
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <div className="flex flex-col items-center mb-6">
+          <img
+            src="/assets/Logo.png"
+            alt="DK Point Logo"
+            className="w-16 h-16 object-contain rounded-2xl mb-3 shadow-sm"
+          />
+          <h1 className="text-2xl font-black text-dokirana-primary text-center">DK Point Admin</h1>
+          <p className="text-xs text-gray-500 mt-1">Management Portal</p>
+        </div>
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

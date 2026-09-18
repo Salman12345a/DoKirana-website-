@@ -6,7 +6,7 @@ const StoreOwners = () => {
     "Simple order management system - no technical expertise required",
     "Valuable customer insights and analytics",
     "Build customer loyalty with consistent digital presence",
-    "Free marketing and promotion through the DoKirana platform"
+    "Free marketing and promotion through the DK Point platform"
   ];
 
   return (
@@ -15,13 +15,13 @@ const StoreOwners = () => {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-dokirana-primary mb-4">For Kirana Store Owners</h2>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            Join the DoKirana network and grow your business by reaching more customers digitally.
+            Join the DK Point network and grow your business by reaching more customers digitally.
           </p>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1">
-            <h3 className="text-2xl font-semibold text-dokirana-primary mb-6">Benefits of Joining DoKirana</h3>
+            <h3 className="text-2xl font-semibold text-dokirana-primary mb-6">Benefits of Joining DK Point</h3>
             
             <ul className="space-y-4 mb-8">
               {benefits.map((benefit, index) => (
@@ -37,7 +37,7 @@ const StoreOwners = () => {
             <div className="bg-dokirana-lighter p-6 rounded-lg mb-8">
               <h4 className="text-lg font-medium text-dokirana-primary mb-3">Simple Onboarding Process</h4>
               <p className="text-gray-700">
-                Getting started with DoKirana is easy. Fill the Google Form, complete your registration, and our team will guide you through the setup process Via WhatsApp and Kindly Remember that our team will respond u with in 2 days of Registration.
+                Getting started with DK Point is easy. Fill the Google Form, complete your registration, and our team will guide you through the setup process Via WhatsApp and Kindly Remember that our team will respond u with in 2 days of Registration.
               </p>
             </div>
             
@@ -47,7 +47,7 @@ const StoreOwners = () => {
           <div className="order-1 lg:order-2 flex justify-center">
             <img 
               src="/lovable-uploads/branch.png" 
-              alt="DoKirana Store Partner App" 
+              alt="DK Point Store Partner App" 
               className="max-w-full h-auto rounded-lg shadow-xl"
             />
           </div>

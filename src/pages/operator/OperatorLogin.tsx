@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Loader2, Phone, ShieldCheck, ArrowLeft, Clock, AlertCircle, ArrowRight } from "lucide-react";
 import { initiateLogin, verifyLogin, setOperatorSession, isOperatorSessionValid } from "../../services/operatorService";
@@ -78,7 +78,17 @@ const OperatorLogin = () => {
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-teal-700 to-teal-600 px-8 py-8 text-white">
-            <p className="text-teal-300 text-xs font-semibold uppercase tracking-widest mb-1">Operators Club</p>
+            <div className="flex items-center gap-3 mb-3">
+              <img
+                src="/assets/Logo.png"
+                alt="DK Point Logo"
+                className="w-11 h-11 object-contain rounded-xl bg-white/10 p-1 shadow-sm"
+              />
+              <div>
+                <p className="text-teal-200 text-xs font-bold uppercase tracking-wider">DK Point</p>
+                <p className="text-white text-xs font-semibold uppercase tracking-widest">Operators Club</p>
+              </div>
+            </div>
             <h1 className="text-2xl font-bold">Operator Login</h1>
             <p className="text-teal-200 text-sm mt-1">
               {step === "phone" ? "Enter your registered phone number" :

@@ -5,19 +5,19 @@ const CustomerTerms: React.FC = (): ReactElement => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Helmet>
-        <title>Terms and Conditions - DoKirana</title>
-        <meta name="description" content="DoKirana Customer Terms and Conditions" />
+        <title>Terms and Conditions - DK Point</title>
+        <meta name="description" content="DK Point Customer Terms and Conditions" />
       </Helmet>
       
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6">Terms and Conditions for DoKirana Customers</h1>
+        <h1 className="text-3xl font-bold mb-6">Terms and Conditions for DK Point Customers</h1>
         <p className="text-gray-600 mb-4">Effective Date: 21-04-2025</p>
 
         <div className="space-y-6">
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
             <p className="mb-4">
-              By using the DoKirana app or website, you agree to be bound by these Terms and Conditions.
+              By using the DK Point app or website, you agree to be bound by these Terms and Conditions.
             </p>
           </section>
 
@@ -61,7 +61,7 @@ const CustomerTerms: React.FC = (): ReactElement => {
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">5. Order Types</h2>
-            <p className="mb-4">DoKirana offers two types of order collection:</p>
+            <p className="mb-4">DK Point offers two types of order collection:</p>
             <ul className="list-disc list-inside mb-4">
               <li>Delivery Orders: Items are delivered to your doorstep by our delivery partners</li>
               <li>Self-Pickup Orders: You collect your order directly from the Kirana store</li>
@@ -110,14 +110,14 @@ const CustomerTerms: React.FC = (): ReactElement => {
           <section>
             <h2 className="text-2xl font-semibold mb-4">8. Intellectual Property</h2>
             <p className="mb-4">
-              All content on the DoKirana platform, including but not limited to text, graphics, logos, and software, is the property of DoKirana and is protected by copyright and other intellectual property laws.
+              All content on the DK Point platform, including but not limited to text, graphics, logos, and software, is the property of DK Point and is protected by copyright and other intellectual property laws.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">9. Limitation of Liability</h2>
             <p className="mb-4">
-              DoKirana is not liable for:
+              DK Point is not liable for:
             </p>
             <ul className="list-disc list-inside mb-4">
               <li>Any delays or failures in delivery due to circumstances beyond our control</li>

@@ -4,15 +4,15 @@ const BranchPrivacyPolicy: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6">Privacy Policy for DoKirana Branch App</h1>
+        <h1 className="text-3xl font-bold mb-6">Privacy Policy for DK Point Branch App</h1>
         <p className="text-gray-600 mb-4">Effective Date: 21-04-2025</p>
 
         <div className="space-y-6">
           <section>
             <p className="mb-4">
-              Welcome to DoKirana! This Privacy Policy describes how we collect, use, and protect the
+              Welcome to DK Point! This Privacy Policy describes how we collect, use, and protect the
               personal information of Kirana store owners and branch managers ("you") when you use the
-              DoKirana Branch App ("App").
+              DK Point Branch App ("App").
             </p>
             <p className="mb-4">
               By using the App, you agree to the collection and use of your information in accordance with
@@ -71,7 +71,7 @@ const BranchPrivacyPolicy: React.FC = () => {
             <h2 className="text-2xl font-semibold mb-4">3. Sharing of Information</h2>
             <p className="mb-4">We do not sell your information. We may share limited information with:</p>
             <ul className="list-disc ml-6">
-              <li>DoKirana Admin Team for verification and support</li>
+              <li>DK Point Admin Team for verification and support</li>
               <li>Delivery Partners to coordinate order pickups and deliveries</li>
               <li>Payment Gateways (e.g., Razorpay) for transaction processing</li>
               <li>Government Authorities if required by law</li>

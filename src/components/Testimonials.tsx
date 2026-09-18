@@ -3,25 +3,25 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 const testimonials = [
   {
-    quote: "DoKirana has changed how I shop for groceries. I can order from my favorite Kirana store and have everything delivered in no time!",
+    quote: "DK Point has changed how I shop for groceries. I can order from my favorite Kirana store and have everything delivered in no time!",
     name: "Priya Sharma",
     role: "Customer",
     avatar: "/lovable-uploads/caa3271f-21f7-43b2-895f-1171e9eea55e.png" // Fourth person image
   },
   {
-    quote: "As a working professional, DoKirana saves me precious time while allowing me to support local businesses. It's the best of both worlds.",
+    quote: "As a working professional, DK Point saves me precious time while allowing me to support local businesses. It's the best of both worlds.",
     name: "Amit Patel",
     role: "Customer",
     avatar: "/lovable-uploads/ee5b46d0-a911-4ec6-ba7a-057ae47c4f47.png" // Third person image
   },
   {
-    quote: "Since joining the DoKirana network, our store has seen a 30% increase in sales. The platform is easy to use and has expanded our customer base.",
+    quote: "Since joining the DK Point network, our store has seen a 30% increase in sales. The platform is easy to use and has expanded our customer base.",
     name: "Rajesh Kumar",
     role: "Store Owner",
     avatar: "/lovable-uploads/f9cd5db8-e63f-4cf6-b6e8-2772b27509bd.png" // First person image
   },
   {
-    quote: "DoKirana has transformed our family business. We now serve customers who couldn't visit our store physically, and our revenue has grown significantly.",
+    quote: "DK Point has transformed our family business. We now serve customers who couldn't visit our store physically, and our revenue has grown significantly.",
     name: "Sunita Gupta",
     role: "Store Owner",
     avatar: "/lovable-uploads/d1cd1c7a-d9bb-4163-bed9-0ad432345574.png" // Second person image
@@ -35,7 +35,7 @@ const Testimonials = () => {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-dokirana-primary mb-4">What People Are Saying</h2>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            Hear from customers and store owners who are part of the DoKirana community.
+            Hear from customers and store owners who are part of the DK Point community.
           </p>
         </div>
         

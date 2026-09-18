@@ -7,9 +7,9 @@ const AppDownload = () => {
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Download the DoKirana App Today</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Download the DK Point App Today</h2>
             <p className="text-lg mb-8">
-              Get started with DoKirana and experience the convenience of ordering from your favorite local Kirana stores with just a few taps.
+              Get started with DK Point and experience the convenience of ordering from your favorite local Kirana stores with just a few taps.
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
@@ -45,7 +45,7 @@ const AppDownload = () => {
               <div className="absolute -inset-2 bg-white/30 rounded-full blur-3xl"></div>
               <img 
                 src="/lovable-uploads/phone.png" 
-                alt="DoKirana App Screenshots" 
+                alt="DK Point App Screenshots" 
                 className="relative z-10 max-w-full h-auto rounded-3xl shadow-xl"
               />
             </div>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Shield } from 'lucide-react';
 import { isOperatorSessionValid } from '../services/operatorService';
@@ -28,8 +28,13 @@ const Navbar = () => {
   return (
     <nav className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container-custom flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold text-dokirana-primary">DoKirana</span>
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <img
+            src="/assets/Logo.png"
+            alt="DK Point Logo"
+            className="w-9 h-9 sm:w-10 sm:h-10 object-contain rounded-xl shadow-xs group-hover:scale-105 transition-transform"
+          />
+          <span className="text-2xl font-extrabold tracking-tight text-dokirana-primary">DK Point</span>
         </Link>
         
         {/* Desktop Menu */}

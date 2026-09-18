@@ -5,12 +5,12 @@ const PrivacyPolicy: React.FC = (): ReactElement => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Helmet>
-        <title>Privacy Policy - DoKirana</title>
-        <meta name="description" content="DoKirana Customer Privacy Policy" />
+        <title>Privacy Policy - DK Point</title>
+        <meta name="description" content="DK Point Customer Privacy Policy" />
       </Helmet>
 
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6">Privacy Policy for DoKirana Customers</h1>
+        <h1 className="text-3xl font-bold mb-6">Privacy Policy for DK Point Customers</h1>
         <p className="text-gray-600 mb-4">Effective Date: 21-04-2025</p>
 
         <div className="space-y-6">
@@ -42,7 +42,7 @@ const PrivacyPolicy: React.FC = (): ReactElement => {
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">3. Sharing of Information</h2>
-            <p className="mb-4">We only share information when necessary for the functioning of the DoKirana platform:</p>
+            <p className="mb-4">We only share information when necessary for the functioning of the DK Point platform:</p>
             <ul className="list-disc list-inside mb-4">
               <li>With store owners to fulfill your orders</li>
               <li>With delivery partners for accurate and timely deliveries</li>
@@ -60,7 +60,7 @@ const PrivacyPolicy: React.FC = (): ReactElement => {
 
           <section>
             <h2 className="text-2xl font-semibold mb-4">5. Your Rights</h2>
-            <p className="mb-4">As a DoKirana user, you have the right to:</p>
+            <p className="mb-4">As a DK Point user, you have the right to:</p>
             <ul className="list-disc list-inside mb-4">
               <li>Access and review your personal data</li>
               <li>Request correction or update of your profile information</li>
@@ -80,7 +80,7 @@ const PrivacyPolicy: React.FC = (): ReactElement => {
           <section>
             <h2 className="text-2xl font-semibold mb-4">7. Changes to This Policy</h2>
             <p className="mb-4">
-              We may periodically update this policy. Significant changes will be communicated through the DoKirana app or website.
+              We may periodically update this policy. Significant changes will be communicated through the DK Point app or website.
             </p>
           </section>
         </div>

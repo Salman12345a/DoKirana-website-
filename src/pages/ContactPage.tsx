@@ -42,7 +42,7 @@ const ContactPage = () => {
               <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
                 <div className="w-full h-[400px] rounded-lg overflow-hidden">
                   <iframe
-                    title="DoKirana Location"
+                    title="DK Point Location"
                     src="https://maps.google.com/maps?q=17.386739,78.495694&z=16&output=embed"
                     className="w-full h-full border-0"
                     allowFullScreen

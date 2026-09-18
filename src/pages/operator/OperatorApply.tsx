@@ -407,8 +407,13 @@ const OperatorApply = () => {
       {/* Top Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-xl font-black text-teal-800">DoKirana</span>
+          <Link to="/" className="flex items-center gap-2.5">
+            <img
+              src="/assets/Logo.png"
+              alt="DK Point Logo"
+              className="w-8 h-8 object-contain rounded-lg shadow-2xs"
+            />
+            <span className="text-xl font-black text-teal-800">DK Point</span>
             <span className="text-xs bg-teal-50 text-teal-800 px-2 py-0.5 rounded-full border border-teal-200 font-bold">
               Operators Club
             </span>

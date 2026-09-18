@@ -37,7 +37,7 @@ const blogPosts = [
   },
   {
     id: 4,
-    title: "How DoKirana is Empowering Small Business Owners",
+    title: "How DK Point is Empowering Small Business Owners",
     excerpt: "Stories of Kirana store owners who have grown their business through digital platforms.",
     image: "/lovable-uploads/37abd8ca-0091-4d78-be64-0469d0676335.png",
     author: "Neha Gupta",
@@ -97,8 +97,8 @@ const Blog = () => {
         <section className="pt-28 pb-16 md:pt-36 md:pb-24 bg-dokirana-lighter">
           <div className="container-custom">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-4xl md:text-5xl font-bold text-dokirana-primary mb-6">DoKirana Blog</h1>
-              <p className="text-lg md:text-xl text-gray-700 mb-6">News, insights, and stories from the DoKirana community.</p>
+              <h1 className="text-4xl md:text-5xl font-bold text-dokirana-primary mb-6">DK Point Blog</h1>
+              <p className="text-lg md:text-xl text-gray-700 mb-6">News, insights, and stories from the DK Point community.</p>
               <div className="flex justify-center gap-2 items-center text-dokirana-primary">
                 <a href="/" className="hover:underline">Home</a>
                 <ChevronRight size={16} />

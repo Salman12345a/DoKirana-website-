@@ -68,6 +68,12 @@ export default {
 					light: '#6b3fa0',
 					lighter: '#f0eaf7',
 					gray: '#f5f5f7'
+				},
+				dkpoint: {
+					primary: '#340e5c',
+					light: '#6b3fa0',
+					lighter: '#f0eaf7',
+					gray: '#f5f5f7'
 				}
 			},
 			fontFamily: {

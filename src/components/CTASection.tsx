@@ -8,14 +8,14 @@ const CTASection = () => {
         <div className="max-w-3xl mx-auto text-center text-white">
           <div className="flex justify-center mb-6">
             <img 
-              src="/lovable-uploads/438c0994-b4c5-4443-8ed0-a2a98758359f.png" 
-              alt="DoKirana Logo" 
-            className="h-44 w-auto p-4 rounded-xl"
+              src="/assets/Logo.png" 
+              alt="DK Point Logo" 
+              className="h-36 w-auto p-3 rounded-2xl bg-white/10 shadow-lg object-contain"
             />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Shopping Experience?</h2>
           <p className="text-lg mb-8">
-            Join thousands of satisfied customers and local Kirana stores on the DoKirana platform. Download the app today and experience the perfect blend of traditional shopping with modern convenience.
+            Join thousands of satisfied customers and local Kirana stores on the DK Point platform. Download the app today and experience the perfect blend of traditional shopping with modern convenience.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">

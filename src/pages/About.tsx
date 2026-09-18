@@ -27,7 +27,7 @@ const About = () => {
         <section className="pt-28 pb-16 md:pt-36 md:pb-24 bg-dokirana-lighter">
           <div className="container-custom">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-4xl md:text-5xl font-bold text-dokirana-primary mb-6">About DoKirana</h1>
+              <h1 className="text-4xl md:text-5xl font-bold text-dokirana-primary mb-6">About DK Point</h1>
               <p className="text-lg md:text-xl text-gray-700 mb-6">Bridging the gap between traditional Kirana stores and modern digital convenience.</p>
               <div className="flex justify-center gap-2 items-center text-dokirana-primary">
                 <a href="/" className="hover:underline">Home</a>
@@ -45,7 +45,7 @@ const About = () => {
               <div>
                 <h2 className="text-3xl font-bold text-dokirana-primary mb-6">Our Story</h2>
                 <p className="text-gray-700 mb-4">
-                  DoKirana was born from a simple observation: while Kirana stores have been the backbone of Indian neighborhoods for generations, they were being left behind in the digital revolution.
+                  DK Point was born from a simple observation: while Kirana stores have been the backbone of Indian neighborhoods for generations, they were being left behind in the digital revolution.
                 </p>
                 <p className="text-gray-700 mb-4">
                   Founded in 2023, our mission is to empower local Kirana stores with technology that helps them thrive in the digital age, while providing customers with the convenience they desire without losing the personal touch that makes Kirana shopping special.
@@ -58,7 +58,7 @@ const About = () => {
               <div className="flex justify-center">
                 <img 
                   src="/lovable-uploads/about.png" 
-                  alt="DoKirana Story" 
+                  alt="DK Point Story" 
                   className="max-w-full h-auto rounded-lg shadow-lg"
                 />
               </div>
@@ -72,7 +72,7 @@ const About = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Values</h2>
               <p className="text-lg max-w-2xl mx-auto">
-                At DoKirana, our core values drive everything we do as we work to connect communities with their local stores.
+                At DK Point, our core values drive everything we do as we work to connect communities with their local stores.
               </p>
             </div>
             
@@ -141,7 +141,7 @@ const About = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-dokirana-primary mb-4">Meet Our Team</h2>
               <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-                The passionate individuals driving DoKirana's mission to connect communities with local Kirana stores.
+                The passionate individuals driving DK Point's mission to connect communities with local Kirana stores.
               </p>
             </div>
             

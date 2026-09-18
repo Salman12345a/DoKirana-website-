@@ -4,13 +4,13 @@ const BranchTerms: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6">Terms and Conditions for DoKirana Branch App</h1>
+        <h1 className="text-3xl font-bold mb-6">Terms and Conditions for DK Point Branch App</h1>
         <p className="text-gray-600 mb-4">Effective Date: 21-04-2025</p>
 
         <div className="space-y-6">
           <p className="mb-4">
-            These Terms and Conditions ("Terms") govern your use of the DoKirana Branch App ("App"),
-            owned and operated by DoKirana. By registering and using the App, you agree to comply
+            These Terms and Conditions ("Terms") govern your use of the DK Point Branch App ("App"),
+            owned and operated by DK Point. By registering and using the App, you agree to comply
             with and be bound by these Terms.
           </p>
 
@@ -28,7 +28,7 @@ const BranchTerms: React.FC = () => {
             <h2 className="text-2xl font-semibold mb-4">2. Account Registration & Verification</h2>
             <ul className="list-disc ml-6">
               <li>You are required to submit valid documents and information for business verification.</li>
-              <li>DoKirana reserves the right to approve or reject any branch registration.</li>
+              <li>DK Point reserves the right to approve or reject any branch registration.</li>
               <li>Your access may be revoked if the documents provided are invalid or fraudulent.</li>
             </ul>
           </section>
@@ -47,7 +47,7 @@ const BranchTerms: React.FC = () => {
           <section>
             <h2 className="text-2xl font-semibold mb-4">4. Order Management</h2>
             <ul className="list-disc ml-6">
-              <li>Orders received through DoKirana must be processed through the App.</li>
+              <li>Orders received through DK Point must be processed through the App.</li>
               <li>
                 Delivery responsibility is based on your selected preferences (self-delivery or
                 platform-assigned delivery partner).
@@ -73,7 +73,7 @@ const BranchTerms: React.FC = () => {
             <h2 className="text-2xl font-semibold mb-4">6. Commission and Charges</h2>
             <ul className="list-disc ml-6">
               <li>
-                DoKirana may charge a service/commission fee per transaction, which will be
+                DK Point may charge a service/commission fee per transaction, which will be
                 communicated to you during onboarding or through updates.
               </li>
               <li>These charges may be revised with prior notice.</li>
@@ -94,7 +94,7 @@ const BranchTerms: React.FC = () => {
           <section>
             <h2 className="text-2xl font-semibold mb-4">8. Intellectual Property</h2>
             <ul className="list-disc ml-6">
-              <li>The DoKirana logo, branding, and app design are the property of DoKirana.</li>
+              <li>The DK Point logo, branding, and app design are the property of DK Point.</li>
               <li>
                 You may not use the brand or platform for unauthorized or competing services.
               </li>
@@ -108,7 +108,7 @@ const BranchTerms: React.FC = () => {
               <li>Misuse or manipulate the platform for fraudulent activity.</li>
               <li>Share your login credentials with unauthorized persons.</li>
               <li>
-                Engage in practices that harm customers, delivery partners, or DoKirana's reputation.
+                Engage in practices that harm customers, delivery partners, or DK Point's reputation.
               </li>
             </ul>
           </section>
@@ -117,7 +117,7 @@ const BranchTerms: React.FC = () => {
             <h2 className="text-2xl font-semibold mb-4">10. Termination</h2>
             <ul className="list-disc ml-6">
               <li>
-                DoKirana reserves the right to suspend or terminate your access to the App for any
+                DK Point reserves the right to suspend or terminate your access to the App for any
                 breach of these Terms.
               </li>
             </ul>

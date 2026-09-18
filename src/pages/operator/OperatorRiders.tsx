@@ -623,7 +623,7 @@ const OperatorRiders = () => {
             {modalTab === "link" ? (
               <form onSubmit={handleLinkSubmit} className="mt-4 space-y-4">
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Enter the registered mobile number of a delivery rider already on the DoKirana platform to link them to your territory fleet.
+                  Enter the registered mobile number of a delivery rider already on the DK Point platform to link them to your territory fleet.
                 </p>
 
                 <div>

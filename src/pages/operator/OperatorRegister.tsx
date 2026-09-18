@@ -73,7 +73,7 @@ const OperatorRegister = () => {
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <span className="inline-flex items-center gap-1.5 bg-teal-800/80 text-teal-200 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wider uppercase border border-teal-600/40 backdrop-blur-sm shadow-sm">
             <Shield size={13} className="text-teal-400" />
-            DoKirana Operators Club
+            DK Point Operators Club
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-6">
             Own Your Territory.<br />

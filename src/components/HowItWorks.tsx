@@ -5,7 +5,7 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: <Smartphone className="w-12 h-12 text-dokirana-primary" />,
-      title: "Order through the DoKirana app",
+      title: "Order through the DK Point app",
       description: "Browse products from your local Kirana stores and add items to your cart."
     },
     {
