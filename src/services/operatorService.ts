@@ -326,12 +326,21 @@ export interface AssignedRiderInfo {
   currentOrders?: unknown[];
 }
 
+export interface StoreAddress {
+  street?: string;
+  area?: string;
+  city?: string;
+  pincode?: string;
+  state?: string;
+  country?: string;
+}
+
 export interface FoodOrder {
   _id: string;
   orderId: string;
   status: string;
   createdAt: string;
-  restaurant?: { name: string; address: string; phone: string };
+  restaurant?: { name: string; address?: string | StoreAddress; phone?: string };
   totalPrice: number;
   deliveryPartner?: AssignedRiderInfo;
   awaitingOperatorRider?: boolean;
@@ -342,14 +351,20 @@ export interface KiranaOrder {
   orderId?: string;
   status: string;
   createdAt: string;
-  branch?: { name: string; address: string; phone: string };
+  branch?: { name: string; address?: string | StoreAddress; phone?: string };
   totalPrice: number;
   deliveryPartner?: AssignedRiderInfo;
   awaitingOperatorRider?: boolean;
 }
-export const getActiveOrders = () =>
-  apiCall<{ status: string; activeOrders: { foodOrders: FoodOrder[]; kiranaOrders: KiranaOrder[] }; total: number }>(
-    config.api.operator.activeOrders
+export const getActiveOrders = (params?: { date?: string; today?: boolean }) => {
+  const qs = new URLSearchParams(
+    Object.entries(params || {})
+      .filter(([, v]) => v !== undefined && v !== "")
+      .map(([k, v]) => [k, String(v)])
+  ).toString();
+  return apiCall<{ status: string; activeOrders: { foodOrders: FoodOrder[]; kiranaOrders: KiranaOrder[] }; total: number }>(
+    `${config.api.operator.activeOrders}${qs ? "?" + qs : ""}`
   );
+};
 export const assignRider = (payload: { orderId: string; riderId: string; orderType: string }) =>
   apiCall(config.api.operator.assignRider, { method: "POST", body: JSON.stringify(payload) });

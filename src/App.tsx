@@ -1,4 +1,4 @@
-﻿import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -122,7 +122,7 @@ const App = () => (
               path="/operator/dispatch"
               element={
                 <OperatorGuard>
-                  <OperatorLayout title="Live Dispatch Desk" subtitle="Real-time order coordination and rider dispatch">
+                  <OperatorLayout title="Live Dispatch Monitor" subtitle="Real-time order tracking and automated dispatch monitoring">
                     <OperatorDispatch />
                   </OperatorLayout>
                 </OperatorGuard>

@@ -249,15 +249,15 @@ const OperatorDashboard = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-gray-900 flex items-center gap-2">
                 <Activity size={18} className="text-teal-600" />
-                Live Dispatch Desk
+                Live Dispatch Monitor
               </h3>
               <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Ready
+                Live Radar
               </span>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed mb-4">
-              Monitor active orders, pending food pick-ups, and assign available delivery riders within your territory.
+              Monitor active grocery and food orders, track automated rider dispatching, and view delivery fulfillment across your territory.
             </p>
             <div className="bg-teal-50 border border-teal-100 rounded-xl p-4 text-xs text-teal-800 space-y-1.5">
               <p className="font-semibold flex items-center gap-1.5">
