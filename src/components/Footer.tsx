@@ -33,6 +33,10 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><Link to="/" className="hover:text-dokirana-light transition-colors">Home</Link></li>
+              <li><a href="#ecosystem" className="hover:text-dokirana-light transition-colors">DKPoint Ecosystem</a></li>
+              <li><a href="#dkeats" className="hover:text-dokirana-light transition-colors">DKEats (Food)</a></li>
+              <li><a href="#dkbranch" className="hover:text-dokirana-light transition-colors">DKBranch (Grocery)</a></li>
+              <li><Link to="/operator/register" className="hover:text-dokirana-light transition-colors">Operators Club</Link></li>
               <li><Link to="/about" className="hover:text-dokirana-light transition-colors">About Us</Link></li>
               <li><Link to="/how-it-works" className="hover:text-dokirana-light transition-colors">How It Works</Link></li>
               <li><Link to="/faqs" className="hover:text-dokirana-light transition-colors">FAQ</Link></li>

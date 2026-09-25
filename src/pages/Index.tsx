@@ -1,6 +1,10 @@
 
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
+import DKPointEcosystem from "../components/DKPointEcosystem";
+import DKBranchSection from "../components/DKBranchSection";
+import DKEatsSection from "../components/DKEatsSection";
+import OperatorEcosystemSection from "../components/OperatorEcosystemSection";
 import HowItWorks from "../components/HowItWorks";
 import Benefits from "../components/Benefits";
 import Testimonials from "../components/Testimonials";
@@ -20,6 +24,10 @@ const Index = () => {
       
       <main>
         <Hero />
+        <DKPointEcosystem />
+        <DKEatsSection />
+        <DKBranchSection />
+        <OperatorEcosystemSection />
         <HowItWorks />
         <Benefits />
         <Features />

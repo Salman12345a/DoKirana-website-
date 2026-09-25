@@ -56,6 +56,9 @@ const config = {
       profile: '/api/operator/me/profile',
       activeOrders: '/api/operators-club/dispatch/active-orders',
       assignRider: '/api/operators-club/dispatch/assign-rider',
+      subscriptions: '/api/operator/me/subscriptions',
+      actionRequiredSubscriptions: '/api/operator/me/subscriptions/action-required',
+      startTrial: '/api/operator/me/subscriptions/start-trial',
     },
 
     // ── Operators Club Merchant / Partner API ──

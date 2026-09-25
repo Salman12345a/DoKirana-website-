@@ -208,6 +208,7 @@ export interface StorePartnerStatusResponse {
     currentPeriodEnd: string;
     gracePeriodEndDate?: string;
     daysRemaining: number;
+  daysUsed?: number;
     isGracePeriod: boolean;
     monthlyRate: number;
   } | null;
@@ -368,3 +369,122 @@ export const getActiveOrders = (params?: { date?: string; today?: boolean }) => 
 };
 export const assignRider = (payload: { orderId: string; riderId: string; orderType: string }) =>
   apiCall(config.api.operator.assignRider, { method: "POST", body: JSON.stringify(payload) });
+export interface SubscriptionLifecycleEvent {
+  _id?: string;
+  fromStatus?: string;
+  toStatus: string;
+  action: string;
+  reason?: string;
+  actorRole: "operator" | "partner" | "system" | "admin";
+  transitionAt: string;
+}
+
+export interface BillingHistoryRecord {
+  _id?: string;
+  cycleStartDate: string;
+  cycleEndDate: string;
+  amountPaid: number;
+  paidAt: string;
+  note?: string;
+}
+
+export interface OperatorSubscription {
+  _id: string;
+  status: "trial" | "active" | "grace_period" | "suspended" | "cancelled";
+  subscriberType: "kirana_branch" | "restaurant";
+  subscriberPhone: string;
+  subscriberId?: string;
+  partnerName?: string;
+  partnerAddress?: {
+    street?: string;
+    area?: string;
+    city?: string;
+    pincode?: string;
+  };
+  trialDurationDays?: number;
+  trialStartAt?: string;
+  trialEndAt?: string;
+  currentPeriodStart?: string;
+  currentPeriodEnd?: string;
+  renewalDueAt?: string;
+  gracePeriodEndDate?: string;
+  daysRemaining: number;
+  actionRequired: boolean;
+  actionPrompt: string;
+  monthlyRate: number;
+  lifecycleEvents?: SubscriptionLifecycleEvent[];
+  billingHistory?: BillingHistoryRecord[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export const getOperatorSubscriptions = (params?: {
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  const qs = new URLSearchParams(
+    Object.entries(params || {})
+      .filter(([, v]) => v !== undefined && v !== "")
+      .map(([k, v]) => [k, String(v)])
+  ).toString();
+  return apiCall<{
+    status: string;
+    total: number;
+    page: number;
+    limit: number;
+    subscriptions: OperatorSubscription[];
+  }>(`${config.api.operator.subscriptions}${qs ? "?" + qs : ""}`);
+};
+
+export const getActionRequiredSubscriptions = () =>
+  apiCall<{
+    status: string;
+    total: number;
+    subscriptions: OperatorSubscription[];
+  }>(config.api.operator.actionRequiredSubscriptions);
+
+export const getSubscriptionDetails = (subscriptionId: string) =>
+  apiCall<{ status: string; subscription: OperatorSubscription }>(
+    `${config.api.operator.subscriptions}/${subscriptionId}`
+  );
+
+export const startFreeTrial = (payload: {
+  subscriberPhone: string;
+  trialDays: number;
+}) =>
+  apiCall<{
+    status: string;
+    message: string;
+    subscription: OperatorSubscription;
+  }>(config.api.operator.startTrial, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const activatePartnerSubscription = (
+  subscriptionId: string,
+  payload?: { paymentNote?: string }
+) =>
+  apiCall<{
+    status: string;
+    message: string;
+    subscription: OperatorSubscription;
+  }>(`${config.api.operator.subscriptions}/${subscriptionId}/activate`, {
+    method: "POST",
+    body: JSON.stringify(payload || {}),
+  });
+
+export const renewPartnerSubscription = (
+  subscriptionId: string,
+  payload?: { paymentNote?: string }
+) =>
+  apiCall<{
+    status: string;
+    message: string;
+    subscription: OperatorSubscription;
+  }>(`${config.api.operator.subscriptions}/${subscriptionId}/renew`, {
+    method: "POST",
+    body: JSON.stringify(payload || {}),
+  });

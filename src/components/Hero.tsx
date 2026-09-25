@@ -1,5 +1,6 @@
 import { ArrowRight, Download, ShoppingBag, Star, TrendingUp, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
+import heroImg from '../assets/Hero.png';
 
 const Hero = () => {
   return (
@@ -16,22 +17,22 @@ const Hero = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-dokirana-primary/10 text-dokirana-primary px-4 py-2 rounded-full mb-6">
               <Star size={16} className="text-yellow-500" />
-              <span className="text-sm font-semibold">India's Growing Kirana Network</span>
+              <span className="text-sm font-semibold">India's Growing Commerce Network</span>
             </div>
 
             {/* Heading */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               <span className="block text-dokirana-primary">
-                Apna Kirana,
+                Abb Online,
               </span>
-              <span className="block bg-gradient-to-r from-dokirana-primary to-dokirana-secondary bg-clip-text text-transparent">
-                Apni Dukan!
+              <span className="block bg-gradient-to-r from-dokirana-primary to-dokirana-secondary bg-clip-text text-transparent pb-3 pt-1">
+                Banega Sasta!
               </span>
             </h1>
 
             {/* Description */}
             <p className="text-lg md:text-xl mb-8 text-gray-700 max-w-lg leading-relaxed">
-              Transforming local Kirana stores into digital powerhouses. Order easily, support local businesses, and enjoy convenient delivery options.
+              Food with DKEats. Grocery with DKBranch. Delivery powered by local Operators. Built for local businesses, connected for customers.
             </p>
 
             {/* CTA Buttons */}
@@ -55,14 +56,14 @@ const Hero = () => {
                 <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 bg-dokirana-primary/10 rounded-full">
                   <ShoppingBag size={20} className="text-dokirana-primary" />
                 </div>
-                <h4 className="text-2xl font-bold text-gray-900">10+</h4>
+                <h4 className="text-2xl font-bold text-gray-900">40+</h4>
                 <p className="text-sm text-gray-600">Active Stores</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 bg-dokirana-primary/10 rounded-full">
                   <Users size={20} className="text-dokirana-primary" />
                 </div>
-                <h4 className="text-2xl font-bold text-gray-900">50+</h4>
+                <h4 className="text-2xl font-bold text-gray-900">500+</h4>
                 <p className="text-sm text-gray-600">Happy Customers</p>
               </div>
               <div className="text-center">
@@ -89,9 +90,9 @@ const Hero = () => {
               {/* Hero Image Container */}
               <div className="relative z-10 transform group-hover:scale-105 transition-transform duration-500">
                 <img 
-                  src="/lovable-uploads/phone.png" 
-                  alt="DK Point Mobile App Interface" 
-                  className="w-full max-w-lg"
+                  src={heroImg} 
+                  alt="DK Point Ecosystem Interface" 
+                  className="w-full max-w-lg object-contain"
                 />
                 
                 {/* Floating Elements */}
