@@ -191,9 +191,9 @@ const OperatorDashboard = () => {
           badge={{ text: "Territory Orders", color: "purple" }}
         />
         <OperatorStatCard
-          title="Total Earnings"
+          title="Total Lifetime Earnings"
           value={`₹${((data?.earnings?.totalEarnings ?? 0)).toLocaleString("en-IN")}`}
-          subtitle={`₹${(data?.earnings?.walletBalance ?? 0).toLocaleString("en-IN")} available for payout`}
+          subtitle={`₹${(data?.earnings?.subscriptionEarnings ?? 0).toLocaleString("en-IN")} subs · ₹${(data?.earnings?.orderEarnings ?? 0).toLocaleString("en-IN")} food orders (₹1/ea)`}
           icon={IndianRupee}
           badge={{ text: "100% Retained", color: "green" }}
         />
@@ -509,8 +509,8 @@ const OperatorDashboard = () => {
                 Earn ₹299 for every active kirana store and restaurant linked to your territory each month.
               </div>
               <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <span className="font-semibold text-gray-800 block text-sm">Order Handling Commission</span>
-                Get paid on every successfully dispatched order coordinated through your fleet.
+                <span className="font-semibold text-gray-800 block text-sm">Per-Order Delivery Earnings</span>
+                Earn ₹1 on every restaurant food order delivered by your territory's delivery partners (grocery orders have ₹0 commission).
               </div>
             </div>
           </div>

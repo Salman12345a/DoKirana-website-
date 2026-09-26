@@ -16,7 +16,6 @@ import {
   X,
   ArrowRight,
   ShieldCheck,
-  CalendarPlus,
   Receipt,
   CreditCard,
   Smartphone,
@@ -24,7 +23,6 @@ import {
 import {
   getOperatorSubscriptions,
   getActionRequiredSubscriptions,
-  startFreeTrial,
   getSubscriptionDetails,
   OperatorSubscription,
 } from "../../services/operatorService";
@@ -37,16 +35,6 @@ const OperatorPartners = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Start / Renew Free Trial Modal State
-  const [showTrialModal, setShowTrialModal] = useState(false);
-  const [selectedPartnerForTrial, setSelectedPartnerForTrial] = useState<OperatorSubscription | null>(null);
-  const [trialPhone, setTrialPhone] = useState("");
-  const [trialDays, setTrialDays] = useState<number>(14);
-  const [customDays, setCustomDays] = useState<string>("");
-  const [trialSubmitting, setTrialSubmitting] = useState(false);
-  const [trialError, setTrialError] = useState<string | null>(null);
-  const [trialSuccess, setTrialSuccess] = useState<string | null>(null);
 
   // Audit History & Receipts Modal State
   const [selectedSubForHistory, setSelectedSubForHistory] = useState<OperatorSubscription | null>(null);
@@ -95,80 +83,6 @@ const OperatorPartners = () => {
     };
   }, [statusFilter]);
 
-  // Open Trial Modal
-  const openTrialModal = (partner?: OperatorSubscription) => {
-    setTrialError(null);
-    setTrialSuccess(null);
-    if (partner) {
-      setSelectedPartnerForTrial(partner);
-      setTrialPhone(partner.subscriberPhone || "");
-    } else {
-      setSelectedPartnerForTrial(null);
-      setTrialPhone("");
-    }
-    setTrialDays(14);
-    setCustomDays("");
-    setShowTrialModal(true);
-  };
-
-  // Open History / Receipts Modal
-  const openHistoryModal = async (sub: OperatorSubscription) => {
-    setSelectedSubForHistory(sub);
-    setLoadingHistoryDetails(true);
-    try {
-      const detailRes = await getSubscriptionDetails(sub._id);
-      if (detailRes.status?.toLowerCase() === "success" && detailRes.subscription) {
-        setSelectedSubForHistory(detailRes.subscription);
-      }
-    } catch (err) {
-      console.warn("Could not fetch full audit history:", err);
-    } finally {
-      setLoadingHistoryDetails(false);
-    }
-  };
-
-  // Handle Free Trial Start / Renew
-  const handleCreateTrial = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setTrialError(null);
-    setTrialSuccess(null);
-
-    const days = customDays ? parseInt(customDays, 10) : trialDays;
-    if (isNaN(days) || days <= 0) {
-      setTrialError("Please enter a valid trial duration in days (minimum 1 day).");
-      return;
-    }
-
-    const cleanPhone = trialPhone.trim();
-    if (!cleanPhone || cleanPhone.length < 10) {
-      setTrialError("Please provide a valid 10-digit mobile number.");
-      return;
-    }
-
-    setTrialSubmitting(true);
-    try {
-      const res = await startFreeTrial({ subscriberPhone: cleanPhone, trialDays: days });
-      if (res.status?.toLowerCase() === "success") {
-        setTrialSuccess(`Free trial of ${days} days granted successfully! Subscription active.`);
-        setTrialPhone("");
-        setCustomDays("");
-        setTimeout(() => {
-          setShowTrialModal(false);
-          setTrialSuccess(null);
-          setSelectedPartnerForTrial(null);
-          fetchSubscriptions();
-        }, 1200);
-      } else {
-        setTrialError(res.message || "Failed to grant free trial");
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to grant free trial";
-      setTrialError(msg);
-    } finally {
-      setTrialSubmitting(false);
-    }
-  };
-
   // Filtering
   const displayedSubscriptions = subscriptions.filter((sub) => {
     if (statusFilter === "action_required") {
@@ -211,13 +125,6 @@ const OperatorPartners = () => {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={() => openTrialModal()}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm"
-          >
-            <Sparkles size={15} />
-            Grant Free Trial
-          </button>
           <button
             onClick={fetchSubscriptions}
             disabled={loading}
@@ -432,15 +339,8 @@ const OperatorPartners = () => {
           <p className="text-xs text-gray-500 mt-1 mb-4">
             {searchTerm || typeFilter || statusFilter
               ? "No partner subscriptions match your chosen filter."
-              : "Grant a complimentary free trial to local kirana stores or hotels to start managing their deliveries."}
+              : "No partner subscriptions found for your franchise area."}
           </p>
-          <button
-            onClick={() => openTrialModal()}
-            className="inline-flex items-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm"
-          >
-            <Sparkles size={14} />
-            Grant Free Trial
-          </button>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -452,8 +352,7 @@ const OperatorPartners = () => {
                   <th className="py-3.5 px-6">Status & Payment Dues</th>
                   <th className="py-3.5 px-6">Cycle Duration</th>
                   <th className="py-3.5 px-6">Next Billing / Expiry</th>
-                  <th className="py-3.5 px-6 text-center">Receipts & Audit</th>
-                  <th className="py-3.5 px-6 text-right">Trial Management</th>
+                  <th className="py-3.5 px-6 text-right">Receipts & Audit</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -613,7 +512,7 @@ const OperatorPartners = () => {
                       </td>
 
                       {/* Audit History & Receipts Button */}
-                      <td className="py-4 px-6 text-center">
+                      <td className="py-4 px-6 text-right">
                         <button
                           onClick={() => openHistoryModal(sub)}
                           className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-teal-50 text-gray-700 hover:text-teal-800 border border-gray-200 hover:border-teal-300 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-xs"
@@ -623,18 +522,6 @@ const OperatorPartners = () => {
                           <span>Receipts</span>
                         </button>
                       </td>
-
-                      {/* GRANT FREE TRIAL CONTROL */}
-                      <td className="py-4 px-6 text-right">
-                        <button
-                          onClick={() => openTrialModal(sub)}
-                          className="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shadow-xs"
-                          title="Grant or extend complimentary trial days for this partner"
-                        >
-                          <Sparkles size={13} />
-                          <span>Grant Free Trial</span>
-                        </button>
-                      </td>
                     </tr>
                   );
                 })}
@@ -642,158 +529,7 @@ const OperatorPartners = () => {
             </table>
           </div>
         </div>
-      )}
-
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 1. GRANT FREE TRIAL MODAL (CONTROLLED BY OPERATOR)                      */}
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      {showTrialModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 animate-scale-up">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
-                  <Sparkles size={18} />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-gray-900">
-                    {selectedPartnerForTrial ? `Grant Trial: ${selectedPartnerForTrial.partnerName || "Partner"}` : "Grant Free Trial"}
-                  </h3>
-                  <p className="text-xs text-gray-500">
-                    {selectedPartnerForTrial
-                      ? `Renew subscription for ${selectedPartnerForTrial.subscriberPhone}`
-                      : "Provide complimentary trial days to a local store"}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setShowTrialModal(false);
-                  setSelectedPartnerForTrial(null);
-                }}
-                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {trialError && (
-              <div className="bg-rose-50 border border-rose-200 text-rose-800 text-xs p-3 rounded-xl mb-4 flex items-center gap-2">
-                <AlertCircle size={15} className="flex-shrink-0" />
-                <span>{trialError}</span>
-              </div>
-            )}
-
-            {trialSuccess && (
-              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-3 rounded-xl mb-4 flex items-center gap-2">
-                <CheckCircle2 size={15} className="flex-shrink-0" />
-                <span>{trialSuccess}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleCreateTrial} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Partner Mobile Number *
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">
-                    +91
-                  </span>
-                  <input
-                    type="tel"
-                    placeholder="9876543210"
-                    value={trialPhone}
-                    onChange={(e) => setTrialPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 font-mono"
-                    required
-                  />
-                </div>
-                <p className="text-[11px] text-gray-400 mt-1">
-                  Must be registered in your territory pincode.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                  Select Trial Renewal Days (Controlled by Operator) *
-                </label>
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                  {[7, 14, 30].map((preset) => (
-                    <button
-                      type="button"
-                      key={preset}
-                      onClick={() => {
-                        setTrialDays(preset);
-                        setCustomDays("");
-                      }}
-                      className={`py-2 rounded-xl text-xs font-bold border transition-all ${
-                        trialDays === preset && !customDays
-                          ? "bg-purple-700 text-white border-purple-700 shadow-xs"
-                          : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-                      }`}
-                    >
-                      {preset} Days
-                    </button>
-                  ))}
-                </div>
-
-                <div className="relative mt-2">
-                  <input
-                    type="number"
-                    placeholder="Or enter custom days (e.g. 10, 21, 60)"
-                    value={customDays}
-                    onChange={(e) => setCustomDays(e.target.value)}
-                    min="1"
-                    max="180"
-                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-purple-50/70 border border-purple-100 rounded-xl p-3 text-xs text-purple-900 flex items-start gap-2">
-                <Clock size={15} className="text-purple-600 flex-shrink-0 mt-0.5" />
-                <p className="text-[11px] leading-relaxed">
-                  Granting this free trial renews the store's delivery service for exactly {customDays || trialDays} day(s) at zero fee. Paid renewals are completed directly by the store in their app.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-end gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowTrialModal(false);
-                    setSelectedPartnerForTrial(null);
-                  }}
-                  className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={trialSubmitting}
-                  className="flex items-center gap-1.5 bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs disabled:opacity-50"
-                >
-                  {trialSubmitting ? (
-                    <>
-                      <Loader2 size={13} className="animate-spin" />
-                      Granting...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles size={13} />
-                      Grant {customDays || trialDays} Days Trial
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 2. AUDIT HISTORY & BILLING RECEIPTS MODAL                             */}
+      )}{/* 2. AUDIT HISTORY & BILLING RECEIPTS MODAL                             */}
       {/* ────────────────────────────────────────────────────────────────────── */}
       {selectedSubForHistory && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -936,19 +672,7 @@ const OperatorPartners = () => {
               </div>
             )}
 
-            <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-              <button
-                onClick={() => {
-                  const sub = selectedSubForHistory;
-                  setSelectedSubForHistory(null);
-                  openTrialModal(sub);
-                }}
-                className="inline-flex items-center gap-1.5 bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs"
-              >
-                <Sparkles size={14} />
-                Grant Free Trial
-              </button>
-
+            <div className="pt-3 border-t border-gray-100 flex items-center justify-end">
               <button
                 onClick={() => setSelectedSubForHistory(null)}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-semibold transition-colors"

@@ -149,7 +149,14 @@ export interface DashboardData {
   pincode: string; city: string; area: string;
   partners: { kirana: number; restaurant: number; total: number };
   today: { earnings: number; transactions: number };
-  pendingPayout: number; riderCount: number;
+  earnings?: {
+    totalEarnings: number;
+    subscriptionEarnings: number;
+    orderEarnings: number;
+    ordersDeliveredCount: number;
+    walletBalance: number;
+  };
+  pendingPayout: number; riderCount: number; totalRiderCount?: number;
 }
 export const getDashboard = () =>
   apiCall<{ status: string; dashboard: DashboardData }>(config.api.operator.dashboard);
@@ -256,8 +263,13 @@ export interface LedgerEntry {
   payoutStatus: string; description: string; createdAt: string;
 }
 export interface EarningsSummary {
-  totalEarnings: number; subscriptionEarnings: number;
-  handlingChargeEarnings: number; pendingPayout: number; paidOut: number;
+  totalEarnings: number;
+  subscriptionEarnings: number;
+  orderEarnings?: number;
+  handlingChargeEarnings: number;
+  orderDeliveryCount?: number;
+  pendingPayout: number;
+  paidOut: number;
 }
 export const getEarnings = (params?: { page?: number; limit?: number; eventType?: string; payoutStatus?: string }) => {
   const qs = new URLSearchParams(Object.entries(params || {}).filter(([,v])=>v!==undefined).map(([k,v])=>[k,String(v)])).toString();
