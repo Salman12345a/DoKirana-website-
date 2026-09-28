@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
+  ShieldCheck,
   Users,
   Truck,
   Bike,
@@ -25,6 +26,7 @@ import {
 
 const navItems = [
   { to: "/operator/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/operator/settlements", icon: ShieldCheck, label: "Cash & Settlements" },
   { to: "/operator/partners",  icon: Users,           label: "My Partners" },
   { to: "/operator/dispatch",  icon: Truck,           label: "Live Dispatch" },
   { to: "/operator/riders",    icon: Bike,            label: "Riders" },

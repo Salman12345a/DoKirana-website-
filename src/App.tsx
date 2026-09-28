@@ -36,6 +36,7 @@ import OperatorDispatch from "./pages/operator/OperatorDispatch";
 import OperatorRiders from "./pages/operator/OperatorRiders";
 import OperatorEarnings from "./pages/operator/OperatorEarnings";
 import OperatorProfile from "./pages/operator/OperatorProfile";
+import OperatorSettlements from "./pages/operator/OperatorSettlements";
 import OperatorGuard from "./components/operator/OperatorGuard";
 import OperatorLayout from "./components/operator/OperatorLayout";
 
@@ -134,6 +135,16 @@ const App = () => (
                 <OperatorGuard>
                   <OperatorLayout title="Rider Fleet" subtitle="Active delivery personnel registered in your zone">
                     <OperatorRiders />
+                  </OperatorLayout>
+                </OperatorGuard>
+              }
+            />
+            <Route
+              path="/operator/settlements"
+              element={
+                <OperatorGuard>
+                  <OperatorLayout title="Cash & Settlements" subtitle="Rider cash collection, merchant payout batches & daily reconciliation">
+                    <OperatorSettlements />
                   </OperatorLayout>
                 </OperatorGuard>
               }

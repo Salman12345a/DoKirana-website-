@@ -36,6 +36,14 @@ import {
   OperatorSubscription,
 } from "../../services/operatorService";
 import OperatorStatCard from "../../components/operator/OperatorStatCard";
+import {
+  getPendingCashHandovers,
+  verifyCashHandover,
+  getDailyClosingSummary,
+  PendingRiderCashGroup,
+  DailyClosingSummary,
+  SettlementTransaction,
+} from "../../services/settlementService";
 
 const OperatorDashboard = () => {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -47,6 +55,15 @@ const OperatorDashboard = () => {
   const [selectedSubForHistory, setSelectedSubForHistory] = useState<OperatorSubscription | null>(null);
   const [loadingHistoryDetails, setLoadingHistoryDetails] = useState(false);
 
+  // Settlement System states
+  const [pendingCashGroups, setPendingCashGroups] = useState<PendingRiderCashGroup[]>([]);
+  const [dailyClosing, setDailyClosing] = useState<DailyClosingSummary | null>(null);
+  const [verifyingHandover, setVerifyingHandover] = useState(false);
+  const [selectedHandoverTxn, setSelectedHandoverTxn] = useState<SettlementTransaction | null>(null);
+  const [actualReceivedInput, setActualReceivedInput] = useState<string>("");
+  const [handoverNote, setHandoverNote] = useState<string>("");
+  const [settlementSuccessMsg, setSettlementSuccessMsg] = useState<string | null>(null);
+
   const storedOperator = getStoredOperatorData();
 
   const fetchDashboardData = async (isRefresh = false) => {
@@ -54,11 +71,20 @@ const OperatorDashboard = () => {
     else setLoading(true);
     setError(null);
     try {
-      const [dashRes, subsRes, actionRes] = await Promise.all([
+      const [dashRes, subsRes, actionRes, cashRes, closingRes] = await Promise.all([
         getDashboard(),
         getOperatorSubscriptions({ limit: 10 }),
         getActionRequiredSubscriptions().catch(() => ({ status: "ERROR", subscriptions: [] })),
+        getPendingCashHandovers().catch(() => ({ status: "ERROR", data: { totalPending: 0, byRider: [], transactions: [] } })),
+        getDailyClosingSummary().catch(() => ({ status: "ERROR", data: null })),
       ]);
+
+      if (cashRes.status === "SUCCESS" && cashRes.data) {
+        setPendingCashGroups(cashRes.data.byRider || []);
+      }
+      if (closingRes.status === "SUCCESS" && closingRes.data) {
+        setDailyClosing(closingRes.data);
+      }
 
       if (dashRes.status?.toLowerCase() === "success" && dashRes.dashboard) {
         setData(dashRes.dashboard);
@@ -92,6 +118,37 @@ const OperatorDashboard = () => {
   }, []);
 
   // Open History / Receipts Modal
+  const handleOpenVerifyModal = (txn: SettlementTransaction) => {
+    setSelectedHandoverTxn(txn);
+    const expected = txn.cashHandoverId?.expectedAmount || txn.amount || 0;
+    const reported = txn.cashHandoverId?.riderReportedAmount || expected;
+    setActualReceivedInput(String(reported));
+    setHandoverNote("");
+  };
+
+  const handleConfirmVerify = async () => {
+    if (!selectedHandoverTxn?.cashHandoverId?._id) return;
+    const amt = parseFloat(actualReceivedInput);
+    if (isNaN(amt) || amt < 0) return;
+
+    setVerifyingHandover(true);
+    try {
+      const res = await verifyCashHandover(selectedHandoverTxn.cashHandoverId._id, {
+        actualAmountReceived: amt,
+        note: handoverNote,
+      });
+      if (res.status === "SUCCESS") {
+        setSettlementSuccessMsg("Cash handover verified successfully.");
+        setSelectedHandoverTxn(null);
+        fetchDashboardData(true);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setVerifyingHandover(false);
+    }
+  };
+
   const openHistoryModal = async (sub: OperatorSubscription) => {
     setSelectedSubForHistory(sub);
     setLoadingHistoryDetails(true);
@@ -167,6 +224,50 @@ const OperatorDashboard = () => {
         </div>
       )}
 
+      {/* DKPoint Cash & Settlement System Alerts */}
+      {settlementSuccessMsg && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-600" />
+            <span className="font-semibold">{settlementSuccessMsg}</span>
+          </div>
+          <button onClick={() => setSettlementSuccessMsg(null)} className="text-emerald-600 hover:text-emerald-800">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* Cash Collection & Settlement Attention Banner */}
+      {pendingCashGroups.length > 0 && (
+        <div className="bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 border border-teal-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="text-xs font-bold text-teal-950 uppercase tracking-wide">
+                  Cash Verification Pending ({pendingCashGroups.length} Rider{pendingCashGroups.length > 1 ? "s" : ""})
+                </h4>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                  ₹{pendingCashGroups.reduce((acc, g) => acc + g.totalExpected, 0).toLocaleString("en-IN")} To Receive
+                </span>
+              </div>
+              <p className="text-xs text-teal-800 mt-0.5">
+                Riders have collected cash on delivered orders and are waiting for your physical handover verification.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/operator/settlements"
+            className="self-start sm:self-auto text-xs font-bold text-white bg-teal-700 hover:bg-teal-800 px-4 py-2 rounded-xl transition-colors shadow-xs flex items-center gap-1.5 whitespace-nowrap"
+          >
+            <span>Open Cash Verification Queue</span>
+            <ArrowRight size={13} />
+          </Link>
+        </div>
+      )}
+
       {/* Primary KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <OperatorStatCard
@@ -221,6 +322,180 @@ const OperatorDashboard = () => {
           >
             Manage Partners &rarr;
           </Link>
+        </div>
+      )}
+
+      {/* DKPoint Cash Collection & Verification Queue Widget */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-gray-900">Rider Cash Collection & Daily Settlement</h2>
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                DKPoint Settlement Engine
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Verify rider cash handovers, check operator cash vault, and disburse merchant settlements.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              to="/operator/settlements"
+              className="text-xs font-semibold text-teal-700 hover:text-teal-900 flex items-center gap-1"
+            >
+              <span>Manage All Settlements & Closing</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+        </div>
+
+        {/* 3 mini summary metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 bg-gray-50/50 border-b border-gray-200">
+          <div className="p-4">
+            <span className="text-[11px] text-gray-500 font-semibold block">Rider Cash to Receive</span>
+            <span className="text-lg font-bold text-gray-900 mt-0.5 block">
+              ₹{pendingCashGroups.reduce((acc, g) => acc + g.totalExpected, 0).toLocaleString("en-IN")}
+            </span>
+            <span className="text-[10px] text-gray-400">{pendingCashGroups.length} riders waiting</span>
+          </div>
+          <div className="p-4">
+            <span className="text-[11px] text-gray-500 font-semibold block">Operator Verified Cash</span>
+            <span className="text-lg font-bold text-teal-700 mt-0.5 block">
+              ₹{(dailyClosing?.cashReceivedByOperator || 0).toLocaleString("en-IN")}
+            </span>
+            <span className="text-[10px] text-gray-400">In physical operator custody</span>
+          </div>
+          <div className="p-4">
+            <span className="text-[11px] text-gray-500 font-semibold block">Merchant Payouts Pending</span>
+            <span className="text-lg font-bold text-blue-700 mt-0.5 block">
+              ₹{(dailyClosing?.merchantSettlementPending || 0).toLocaleString("en-IN")}
+            </span>
+            <span className="text-[10px] text-gray-400">Due to restaurants & stores</span>
+          </div>
+        </div>
+
+        {/* Pending Cash Handovers List */}
+        {pendingCashGroups.length === 0 ? (
+          <div className="p-8 text-center max-w-sm mx-auto">
+            <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2">
+              <CheckCircle2 size={20} />
+            </div>
+            <h4 className="font-bold text-gray-900 text-xs">No Pending Rider Handovers</h4>
+            <p className="text-[11px] text-gray-500 mt-0.5">
+              All rider cash collections in your zone have been verified and accounted for.
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {pendingCashGroups.slice(0, 3).map((group) => (
+              <div key={group.rider?._id || Math.random()} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50/60 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                    <Bike size={18} />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-gray-900 flex items-center gap-2">
+                      <span>{group.rider?.name || "Territory Rider"}</span>
+                      <span className="text-[10px] font-normal text-gray-400">({group.rider?.phone || "No phone"})</span>
+                    </div>
+                    <div className="text-[11px] text-gray-500 mt-0.5">
+                      {group.transactions.length} Order(s) Collected • Expected: <span className="font-bold text-gray-900">₹{group.totalExpected}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {group.transactions[0] && (
+                    <button
+                      onClick={() => handleOpenVerifyModal(group.transactions[0])}
+                      className="px-3.5 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
+                    >
+                      <ShieldCheck size={14} />
+                      <span>Verify & Accept</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* VERIFY CASH MODAL FOR DASHBOARD */}
+      {selectedHandoverTxn && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="text-teal-600" size={20} />
+                <h3 className="font-bold text-gray-900 text-sm">Verify Cash Handover</h3>
+              </div>
+              <button onClick={() => setSelectedHandoverTxn(null)} className="text-gray-400 hover:text-gray-600">
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded-xl space-y-1.5 text-xs text-gray-600">
+              <div className="flex justify-between">
+                <span>Order Ref:</span>
+                <span className="font-mono font-bold text-gray-900">{selectedHandoverTxn.orderRef || selectedHandoverTxn.orderId}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Rider Name:</span>
+                <span className="font-semibold text-gray-900">{selectedHandoverTxn.riderId?.name || "Rider"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Expected Amount:</span>
+                <span className="font-bold text-gray-900">₹{selectedHandoverTxn.cashHandoverId?.expectedAmount || selectedHandoverTxn.amount}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-700 block mb-1">
+                Actual Cash Received from Rider (₹)
+              </label>
+              <input
+                type="number"
+                value={actualReceivedInput}
+                onChange={(e) => setActualReceivedInput(e.target.value)}
+                className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:border-teal-600"
+                placeholder="Enter exact received cash"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-700 block mb-1">
+                Verification Note (Optional)
+              </label>
+              <input
+                type="text"
+                value={handoverNote}
+                onChange={(e) => setHandoverNote(e.target.value)}
+                className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-teal-600"
+                placeholder="e.g. Received full amount"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setSelectedHandoverTxn(null)}
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmVerify}
+                disabled={verifyingHandover}
+                className="flex-1 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
+              >
+                {verifyingHandover ? "Verifying..." : "Confirm & Accept"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
