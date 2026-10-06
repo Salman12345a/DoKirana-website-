@@ -52,6 +52,7 @@ export interface UpdateProductData {
   name?: string;
   description?: string;
   price?: number;
+  discountPrice?: number;
   quantity?: string;
   unit?: string;
   isPacket?: boolean;

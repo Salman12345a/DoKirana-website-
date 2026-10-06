@@ -207,3 +207,31 @@ export async function getOperatorSettlementTransactions(params?: {
     `/api/settlement/operator/transactions${queryStr}`
   );
 }
+
+export interface PendingMerchantGroup {
+  merchantId: string;
+  merchantType: "branch" | "restaurant";
+  merchantName: string;
+  merchantPhone?: string;
+  merchantAddress?: string;
+  transactions: SettlementTransaction[];
+  totalAmount: number;
+}
+
+export interface PendingMerchantsResponse {
+  status: string;
+  data: {
+    totalMerchants: number;
+    totalTransactions: number;
+    totalVaultAmount: number;
+    merchants: PendingMerchantGroup[];
+    transactions: SettlementTransaction[];
+  };
+}
+
+/**
+ * Fetch all verified cash collections in operator vault grouped by merchant ready for payout
+ */
+export async function getPendingMerchantSettlements(): Promise<PendingMerchantsResponse> {
+  return settlementApiCall<PendingMerchantsResponse>("/api/settlement/operator/pending-merchants");
+}

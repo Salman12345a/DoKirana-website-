@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, ExternalLink } from 'lucide-react';
+import { Edit, Trash2, ExternalLink, UtensilsCrossed, Store } from 'lucide-react';
 import affiliateService, { AffiliateProduct } from '../services/affiliateService';
+import restaurantMenuService from '../services/restaurantMenuService';
 import EditAffiliateProductModal from '../components/EditAffiliateProductModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import config from '../config/config';
@@ -33,6 +34,11 @@ const AdminDashboard = () => {
   const [branchId, setBranchId] = useState('');
   const [isVerifyingBranch, setIsVerifyingBranch] = useState(false);
   const [branchVerificationError, setBranchVerificationError] = useState('');
+
+  // Restaurant verification states (DK Eats)
+  const [restaurantId, setRestaurantId] = useState('');
+  const [isVerifyingRestaurant, setIsVerifyingRestaurant] = useState(false);
+  const [restaurantVerificationError, setRestaurantVerificationError] = useState('');
 
   // Affiliate products state
   const [activeAffiliateProducts, setActiveAffiliateProducts] = useState<AffiliateProduct[]>([]);
@@ -165,7 +171,15 @@ const AdminDashboard = () => {
       const data = await response.json();
 
       if (response.ok && data.status === 'success') {
-        navigate('/admin/manage-branch', { state: { branch: data.data.branch } });
+        const branchDoc = data.data.branch;
+        const isRest = data.data.isRestaurant || Boolean(branchDoc?.cuisineTypes || branchDoc?.restaurantFrontImage || branchDoc?.type === 'restaurant');
+
+        if (isRest) {
+          localStorage.setItem('eats_accessToken', data.data.accessToken || adminToken);
+          navigate('/admin/manage-restaurant', { state: { restaurant: branchDoc } });
+        } else {
+          navigate('/admin/manage-branch', { state: { branch: branchDoc } });
+        }
       } else {
         setBranchVerificationError(data.message || 'Failed to verify branch. Please check the ID and try again.');
       }
@@ -174,6 +188,24 @@ const AdminDashboard = () => {
       setBranchVerificationError('An unexpected error occurred. Please try again later.');
     } finally {
       setIsVerifyingBranch(false);
+    }
+  };
+
+  const handleVerifyAndManageRestaurant = async () => {
+    if (!restaurantId) {
+      setRestaurantVerificationError('Please enter a Restaurant ID.');
+      return;
+    }
+    setIsVerifyingRestaurant(true);
+    setRestaurantVerificationError('');
+    try {
+      const data = await restaurantMenuService.verifyAndLoginAsRestaurant(restaurantId);
+      navigate('/admin/manage-restaurant', { state: { restaurant: data.restaurant } });
+    } catch (err: any) {
+      console.error('Restaurant verification failed:', err);
+      setRestaurantVerificationError(err.message || 'Failed to verify restaurant. Please verify the Restaurant ID.');
+    } finally {
+      setIsVerifyingRestaurant(false);
     }
   };
 
@@ -369,17 +401,17 @@ const AdminDashboard = () => {
           </div>
           
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-3">Branch Management</h3>
+            <h3 className="text-lg font-semibold mb-3">Kirana Branch Management</h3>
             <div className="space-y-4">
               <div>
-                <label htmlFor="branch-id" className="block text-sm font-medium text-gray-700">Branch ID</label>
+                <label htmlFor="branch-id" className="block text-sm font-medium text-gray-700">Kirana Branch ID</label>
                 <input
                   type="text"
                   id="branch-id"
                   value={branchId}
                   onChange={(e) => setBranchId(e.target.value)}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-dokirana-primary focus:border-dokirana-primary sm:text-sm"
-                  placeholder="Enter Branch ID to manage"
+                  placeholder="Enter Kirana Branch ID to manage"
                 />
               </div>
               <button
@@ -387,9 +419,43 @@ const AdminDashboard = () => {
                 disabled={isVerifyingBranch}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-dokirana-primary hover:bg-dokirana-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dokirana-primary disabled:opacity-50"
               >
-                {isVerifyingBranch ? 'Verifying...' : 'Verify & Manage Branch'}
+                {isVerifyingBranch ? 'Verifying...' : 'Verify & Manage Kirana Branch'}
               </button>
               {branchVerificationError && <p className="mt-2 text-sm text-red-600">{branchVerificationError}</p>}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6 border-t-4 border-orange-500">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="p-1.5 bg-orange-100 text-orange-600 rounded-lg">
+                <UtensilsCrossed className="w-4 h-4" />
+              </span>
+              <h3 className="text-lg font-semibold text-gray-900">Restaurant Menu (DK Eats)</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="restaurant-id" className="block text-sm font-medium text-gray-700">
+                  Restaurant ID
+                </label>
+                <input
+                  type="text"
+                  id="restaurant-id"
+                  value={restaurantId}
+                  onChange={(e) => setRestaurantId(e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  placeholder="Enter Restaurant ID (e.g. 6a9736c204cfc851f7d618ab)"
+                />
+              </div>
+              <button
+                onClick={handleVerifyAndManageRestaurant}
+                disabled={isVerifyingRestaurant}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors cursor-pointer"
+              >
+                {isVerifyingRestaurant ? 'Verifying...' : 'Verify & Manage Restaurant Products'}
+              </button>
+              {restaurantVerificationError && (
+                <p className="mt-2 text-sm text-red-600">{restaurantVerificationError}</p>
+              )}
             </div>
           </div>
         </div>

@@ -20,6 +20,8 @@ import BranchManagementPage from "./pages/BranchManagementPage";
 import InventoryCategoriesScreen from "./pages/InventoryCategoriesScreen";
 import ProductsScreen from "./pages/ProductsScreen";
 import CreateAffiliateProduct from "./pages/CreateAffiliateProduct";
+import RestaurantManagementPage from "./pages/RestaurantManagementPage";
+import RestaurantProductsScreen from "./pages/RestaurantProductsScreen";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CustomerTerms from "./pages/CustomerTerms";
 import AuthGuard from "./components/AuthGuard";
@@ -90,6 +92,8 @@ const App = () => (
             <Route path="/admin/manage-branch" element={<AdminRoute><BranchManagementPage /></AdminRoute>} />
             <Route path="/admin/manage-branch/:branchId/inventory" element={<AdminRoute><InventoryCategoriesScreen /></AdminRoute>} />
             <Route path="/admin/manage-branch/:branchId/inventory/:categoryId" element={<AdminRoute><ProductsScreen /></AdminRoute>} />
+            <Route path="/admin/manage-restaurant" element={<AdminRoute><RestaurantManagementPage /></AdminRoute>} />
+            <Route path="/admin/manage-restaurant/:restaurantId/menu" element={<AdminRoute><RestaurantProductsScreen /></AdminRoute>} />
             <Route path="/create-affiliate-product" element={<AdminRoute><CreateAffiliateProduct /></AdminRoute>} />
 
             {/* Operator Public Routes */}

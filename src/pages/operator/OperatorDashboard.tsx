@@ -41,6 +41,10 @@ import {
   verifyCashHandover,
   getDailyClosingSummary,
   PendingRiderCashGroup,
+  getPendingMerchantSettlements,
+  getOperatorSettlementTransactions,
+  PendingMerchantGroup,
+  settleToMerchant,
   DailyClosingSummary,
   SettlementTransaction,
 } from "../../services/settlementService";
@@ -58,6 +62,9 @@ const OperatorDashboard = () => {
   // Settlement System states
   const [pendingCashGroups, setPendingCashGroups] = useState<PendingRiderCashGroup[]>([]);
   const [dailyClosing, setDailyClosing] = useState<DailyClosingSummary | null>(null);
+  const [pendingMerchants, setPendingMerchants] = useState<PendingMerchantGroup[]>([]);
+  const [totalVaultAmount, setTotalVaultAmount] = useState<number>(0);
+  const [vaultTxns, setVaultTxns] = useState<SettlementTransaction[]>([]);
   const [verifyingHandover, setVerifyingHandover] = useState(false);
   const [selectedHandoverTxn, setSelectedHandoverTxn] = useState<SettlementTransaction | null>(null);
   const [actualReceivedInput, setActualReceivedInput] = useState<string>("");
@@ -71,12 +78,14 @@ const OperatorDashboard = () => {
     else setLoading(true);
     setError(null);
     try {
-      const [dashRes, subsRes, actionRes, cashRes, closingRes] = await Promise.all([
+      const [dashRes, subsRes, actionRes, cashRes, closingRes, merchantsRes, vaultTxnRes] = await Promise.all([
         getDashboard(),
         getOperatorSubscriptions({ limit: 10 }),
         getActionRequiredSubscriptions().catch(() => ({ status: "ERROR", subscriptions: [] })),
         getPendingCashHandovers().catch(() => ({ status: "ERROR", data: { totalPending: 0, byRider: [], transactions: [] } })),
         getDailyClosingSummary().catch(() => ({ status: "ERROR", data: null })),
+        getPendingMerchantSettlements().catch(() => ({ status: "ERROR", data: { totalMerchants: 0, totalTransactions: 0, totalVaultAmount: 0, merchants: [], transactions: [] } })),
+        getOperatorSettlementTransactions({ status: "CASH_COLLECTED_BY_OPERATOR", limit: 100 }).catch(() => ({ status: "ERROR", data: { transactions: [] } })),
       ]);
 
       if (cashRes.status === "SUCCESS" && cashRes.data) {
@@ -84,6 +93,13 @@ const OperatorDashboard = () => {
       }
       if (closingRes.status === "SUCCESS" && closingRes.data) {
         setDailyClosing(closingRes.data);
+      }
+      if (merchantsRes.status === "SUCCESS" && merchantsRes.data) {
+        setPendingMerchants(merchantsRes.data.merchants || []);
+        setTotalVaultAmount(merchantsRes.data.totalVaultAmount || 0);
+      }
+      if (vaultTxnRes.status === "SUCCESS" && vaultTxnRes.data) {
+        setVaultTxns(vaultTxnRes.data.transactions || []);
       }
 
       if (dashRes.status?.toLowerCase() === "success" && dashRes.dashboard) {
@@ -107,6 +123,34 @@ const OperatorDashboard = () => {
       setRefreshing(false);
     }
   };
+
+  const effectiveVaultAmount = (totalVaultAmount > 0)
+    ? totalVaultAmount
+    : vaultTxns.reduce((sum, t) => sum + (t.actualAmount !== undefined && t.actualAmount !== null ? t.actualAmount : (t.amount || 0)), 0);
+
+  const effectiveMerchants = pendingMerchants.length > 0
+    ? pendingMerchants
+    : (() => {
+        const byM: Record<string, PendingMerchantGroup> = {};
+        for (const txn of vaultTxns) {
+          const rawM = txn.merchantId;
+          const mId = (typeof rawM === "object" ? (rawM as any)?._id : rawM) || "partner";
+          if (!byM[mId]) {
+            const mDoc = (typeof rawM === "object" ? rawM : {}) as any;
+            byM[mId] = {
+              merchantId: mId,
+              merchantType: txn.merchantType || (mDoc?.restaurantName ? "restaurant" : "branch"),
+              merchantName: mDoc?.restaurantName || mDoc?.name || mDoc?.branchName || (txn.merchantType === "restaurant" ? "Restaurant Partner" : "Kirana Store"),
+              merchantPhone: mDoc?.phone || mDoc?.contactNumber || null,
+              transactions: [],
+              totalAmount: 0,
+            };
+          }
+          byM[mId].transactions.push(txn);
+          byM[mId].totalAmount += (txn.actualAmount !== undefined && txn.actualAmount !== null ? txn.actualAmount : (txn.amount || 0));
+        }
+        return Object.values(byM);
+      })();
 
   useEffect(() => {
     fetchDashboardData();
@@ -363,18 +407,66 @@ const OperatorDashboard = () => {
           <div className="p-4">
             <span className="text-[11px] text-gray-500 font-semibold block">Operator Verified Cash</span>
             <span className="text-lg font-bold text-teal-700 mt-0.5 block">
-              ₹{(dailyClosing?.cashReceivedByOperator || 0).toLocaleString("en-IN")}
+              ₹{(effectiveVaultAmount || dailyClosing?.cashReceivedByOperator || 0).toLocaleString("en-IN")}
             </span>
             <span className="text-[10px] text-gray-400">In physical operator custody</span>
           </div>
           <div className="p-4">
             <span className="text-[11px] text-gray-500 font-semibold block">Merchant Payouts Pending</span>
             <span className="text-lg font-bold text-blue-700 mt-0.5 block">
-              ₹{(dailyClosing?.merchantSettlementPending || 0).toLocaleString("en-IN")}
+              ₹{(effectiveVaultAmount || dailyClosing?.merchantSettlementPending || 0).toLocaleString("en-IN")}
             </span>
             <span className="text-[10px] text-gray-400">Due to restaurants & stores</span>
           </div>
         </div>
+
+        {/* Merchant Cash in Vault (Ready to Settle) */}
+        {effectiveMerchants.length > 0 && (
+          <div className="p-4 bg-teal-50/50 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center gap-2">
+                <Store size={15} className="text-teal-700" />
+                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wide">
+                  Merchant Cash in Vault ({effectiveMerchants.length} Partner{pendingMerchants.length > 1 ? "s" : ""})
+                </h3>
+              </div>
+              <span className="text-xs font-bold text-teal-800 bg-teal-100/70 px-2.5 py-0.5 rounded-full">
+                Total: ₹{effectiveVaultAmount.toLocaleString("en-IN")}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {effectiveMerchants.map((m) => (
+                <div
+                  key={m.merchantId}
+                  className="bg-white p-3 rounded-xl border border-teal-200/80 flex items-center justify-between shadow-2xs hover:border-teal-300 transition-colors"
+                >
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-bold text-gray-900">{m.merchantName}</p>
+                      <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 font-semibold">
+                        {m.merchantType || "Merchant"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-0.5">
+                      {m.transactions.length} Order(s) Verified • {m.merchantPhone || "Phone N/A"}
+                    </p>
+                  </div>
+                  <div className="text-right flex items-center gap-2.5">
+                    <span className="text-sm font-extrabold text-teal-700">
+                      ₹{m.totalAmount.toLocaleString("en-IN")}
+                    </span>
+                    <Link
+                      to="/operator/settlements"
+                      className="px-3 py-1.5 text-xs font-bold bg-teal-700 hover:bg-teal-800 text-white rounded-lg shadow-2xs transition-colors whitespace-nowrap"
+                    >
+                      Settle Payout
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Pending Cash Handovers List */}
         {pendingCashGroups.length === 0 ? (

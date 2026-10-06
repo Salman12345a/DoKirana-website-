@@ -22,6 +22,8 @@ import {
   getDailyClosingSummary,
   submitDailyClosing,
   getOperatorSettlementTransactions,
+  getPendingMerchantSettlements,
+  PendingMerchantGroup,
   PendingRiderCashGroup,
   DailyClosingSummary,
   SettlementTransaction,
@@ -37,6 +39,13 @@ const OperatorSettlements: React.FC = () => {
 
   const [pendingCashGroups, setPendingCashGroups] = useState<PendingRiderCashGroup[]>([]);
   const [totalPendingCash, setTotalPendingCash] = useState<number>(0);
+  const [pendingMerchants, setPendingMerchants] = useState<PendingMerchantGroup[]>([]);
+  const [totalVaultAmount, setTotalVaultAmount] = useState<number>(0);
+  const [vaultTxns, setVaultTxns] = useState<SettlementTransaction[]>([]);
+
+  const [settlingMerchant, setSettlingMerchant] = useState<PendingMerchantGroup | null>(null);
+  const [settleNote, setSettleNote] = useState<string>("");
+  const [submittingSettle, setSubmittingSettle] = useState(false);
 
   const [dailyClosing, setDailyClosing] = useState<DailyClosingSummary | null>(null);
   const [closingDate, setClosingDate] = useState<string>(new Date().toISOString().slice(0, 10));
@@ -57,10 +66,12 @@ const OperatorSettlements: React.FC = () => {
     setSuccessMsg(null);
 
     try {
-      const [cashRes, closingRes, txnRes] = await Promise.all([
+      const [cashRes, closingRes, txnRes, merchantsRes, vaultTxnRes] = await Promise.all([
         getPendingCashHandovers().catch(() => ({ status: "ERROR", data: { totalPending: 0, byRider: [], transactions: [] } })),
         getDailyClosingSummary(closingDate).catch(() => ({ status: "ERROR", data: null })),
-        getOperatorSettlementTransactions({ status: txnFilterStatus || undefined, page: 1, limit: 25 }).catch(() => ({ status: "ERROR", data: { transactions: [], pagination: { total: 0, page: 1, limit: 25, pages: 1 } } })),
+        getOperatorSettlementTransactions({ status: txnFilterStatus || undefined, page: 1, limit: 50 }).catch(() => ({ status: "ERROR", data: { transactions: [], pagination: { total: 0, page: 1, limit: 50, pages: 1 } } })),
+        getPendingMerchantSettlements().catch(() => ({ status: "ERROR", data: { totalMerchants: 0, totalTransactions: 0, totalVaultAmount: 0, merchants: [], transactions: [] } })),
+        getOperatorSettlementTransactions({ status: "CASH_COLLECTED_BY_OPERATOR", limit: 100 }).catch(() => ({ status: "ERROR", data: { transactions: [] } })),
       ]);
 
       if (cashRes.status === "SUCCESS" && cashRes.data) {
@@ -75,6 +86,13 @@ const OperatorSettlements: React.FC = () => {
       if (txnRes.status === "SUCCESS" && txnRes.data) {
         setTransactions(txnRes.data.transactions || []);
       }
+      if (merchantsRes.status === "SUCCESS" && merchantsRes.data) {
+        setPendingMerchants(merchantsRes.data.merchants || []);
+        setTotalVaultAmount(merchantsRes.data.totalVaultAmount || 0);
+      }
+      if (vaultTxnRes.status === "SUCCESS" && vaultTxnRes.data) {
+        setVaultTxns(vaultTxnRes.data.transactions || []);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to load settlement data";
       setError(message);
@@ -87,6 +105,61 @@ const OperatorSettlements: React.FC = () => {
   useEffect(() => {
     fetchAllData();
   }, [closingDate, txnFilterStatus]);
+
+  // Derived effective vault transactions (merges explicit vault transactions and ledger items)
+  const allVaultTransactions = React.useMemo(() => {
+    const map = new Map<string, SettlementTransaction>();
+    for (const t of vaultTxns) {
+      if (t.status === "CASH_COLLECTED_BY_OPERATOR" && !t.merchantSettlementId) {
+        map.set(t._id || t.transactionId, t);
+      }
+    }
+    for (const t of transactions) {
+      if (t.status === "CASH_COLLECTED_BY_OPERATOR" && !t.merchantSettlementId) {
+        map.set(t._id || t.transactionId, t);
+      }
+    }
+    return Array.from(map.values());
+  }, [vaultTxns, transactions]);
+
+  const effectiveVaultAmount = React.useMemo(() => {
+    const fromTxns = allVaultTransactions.reduce(
+      (sum, t) => sum + (t.actualAmount !== undefined && t.actualAmount !== null ? t.actualAmount : (t.amount || 0)),
+      0
+    );
+    return totalVaultAmount > 0 ? totalVaultAmount : fromTxns;
+  }, [totalVaultAmount, allVaultTransactions]);
+
+  const effectiveMerchants = React.useMemo(() => {
+    if (pendingMerchants.length > 0) return pendingMerchants;
+    if (allVaultTransactions.length === 0) return [];
+
+    const byM: Record<string, PendingMerchantGroup> = {};
+    for (const txn of allVaultTransactions) {
+      const rawM = txn.merchantId;
+      const mId = (typeof rawM === "object" ? (rawM as any)?._id : rawM) || "partner";
+      if (!byM[mId]) {
+        const mDoc = (typeof rawM === "object" ? rawM : {}) as any;
+        const merchantName =
+          mDoc?.restaurantName ||
+          mDoc?.name ||
+          mDoc?.branchName ||
+          (txn.merchantType === "restaurant" ? "Restaurant Partner" : "Kirana Store");
+
+        byM[mId] = {
+          merchantId: mId,
+          merchantType: txn.merchantType || (mDoc?.restaurantName ? "restaurant" : "branch"),
+          merchantName,
+          merchantPhone: mDoc?.phone || mDoc?.contactNumber || null,
+          transactions: [],
+          totalAmount: 0,
+        };
+      }
+      byM[mId].transactions.push(txn);
+      byM[mId].totalAmount += (txn.actualAmount !== undefined && txn.actualAmount !== null ? txn.actualAmount : (txn.amount || 0));
+    }
+    return Object.values(byM);
+  }, [pendingMerchants, allVaultTransactions]);
 
   const handleOpenVerifyModal = (txn: SettlementTransaction) => {
     setSelectedHandoverTxn(txn);
@@ -123,6 +196,41 @@ const OperatorSettlements: React.FC = () => {
       setError(err instanceof Error ? err.message : "Error verifying cash handover");
     } finally {
       setVerifying(false);
+    }
+  };
+
+
+  const handleOpenSettleModal = (m: PendingMerchantGroup) => {
+    setSettlingMerchant(m);
+    setSettleNote("");
+  };
+
+  const handleConfirmSettleToMerchant = async () => {
+    if (!settlingMerchant) return;
+    setSubmittingSettle(true);
+    setError(null);
+    try {
+      const rawMId = settlingMerchant.merchantId;
+      const mId = typeof rawMId === "object" ? (rawMId as any)?._id : rawMId;
+      const res = await settleToMerchant({
+        merchantId: mId,
+        merchantType: settlingMerchant.merchantType || "restaurant",
+        transactionIds: settlingMerchant.transactions.map((t) => t._id || t.transactionId),
+        totalAmount: settlingMerchant.totalAmount,
+        note: settleNote || undefined,
+      });
+
+      if (res.status === "SUCCESS") {
+        setSuccessMsg(`Successfully settled ₹${settlingMerchant.totalAmount.toLocaleString("en-IN")} to ${settlingMerchant.merchantName}`);
+        setSettlingMerchant(null);
+        fetchAllData(true);
+      } else {
+        setError(res.message || "Failed to settle cash to merchant");
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error settling cash to merchant");
+    } finally {
+      setSubmittingSettle(false);
     }
   };
 
@@ -229,7 +337,7 @@ const OperatorSettlements: React.FC = () => {
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-bold text-gray-900">₹{(dailyClosing?.cashReceivedByOperator || 0).toLocaleString("en-IN")}</span>
+            <span className="text-2xl font-bold text-gray-900">₹{(effectiveVaultAmount || dailyClosing?.cashReceivedByOperator || 0).toLocaleString("en-IN")}</span>
             <p className="text-[11px] text-teal-600 mt-0.5">Verified operator cash</p>
           </div>
         </div>
@@ -242,7 +350,7 @@ const OperatorSettlements: React.FC = () => {
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-2xl font-bold text-gray-900">₹{(dailyClosing?.merchantSettlementPending || 0).toLocaleString("en-IN")}</span>
+            <span className="text-2xl font-bold text-gray-900">₹{(effectiveVaultAmount || dailyClosing?.merchantSettlementPending || 0).toLocaleString("en-IN")}</span>
             <p className="text-[11px] text-gray-400 mt-0.5">Ready for restaurant/kirana payout</p>
           </div>
         </div>
@@ -275,11 +383,26 @@ const OperatorSettlements: React.FC = () => {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setActiveTab("handovers")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === "handovers" ? "bg-teal-700 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            Rider Cash Handovers ({pendingCashGroups.length})
+            <Bike size={14} />
+            <span>Rider Handovers ({pendingCashGroups.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("merchants")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === "merchants" ? "bg-teal-700 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <Store size={14} />
+            <span>Merchant Payouts ({effectiveMerchants.length})</span>
+            {effectiveVaultAmount > 0 && (
+              <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${activeTab === "merchants" ? "bg-teal-800 text-teal-100" : "bg-amber-100 text-amber-800 font-bold"}`}>
+                ₹{effectiveVaultAmount.toLocaleString("en-IN")}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab("closing")}
@@ -378,6 +501,85 @@ const OperatorSettlements: React.FC = () => {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      
+      {/* TAB: MERCHANT PAYOUTS */}
+      {activeTab === "merchants" && (
+        <div className="space-y-4">
+          {effectiveMerchants.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+                <CheckCircle2 size={24} />
+              </div>
+              <h3 className="text-base font-bold text-gray-900">All Merchant Cash is Settled</h3>
+              <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+                No verified cash collections are currently held in your vault awaiting payout to restaurants or kiranas.
+              </p>
+            </div>
+          ) : (
+            effectiveMerchants.map((m) => (
+              <div key={m.merchantId} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs">
+                <div className="p-4 bg-gray-50/80 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold">
+                      {m.merchantType === "restaurant" ? <UtensilsCrossed size={20} /> : <Store size={20} />}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-bold text-gray-900">{m.merchantName}</h4>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-200 text-gray-700 uppercase">
+                          {m.merchantType}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-gray-500">
+                        {m.merchantPhone || "Phone N/A"} • {m.transactions.length} Order(s) Verified in Vault
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase font-semibold text-gray-400 block">Total Due to Settle</span>
+                      <span className="text-base font-bold text-emerald-700">₹{m.totalAmount.toLocaleString("en-IN")}</span>
+                    </div>
+
+                    <button
+                      onClick={() => handleOpenSettleModal(m)}
+                      className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs"
+                    >
+                      <Wallet size={14} />
+                      <span>Settle to {m.merchantType === "restaurant" ? "Restaurant" : "Store"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="divide-y divide-gray-100">
+                  {m.transactions.map((txn) => (
+                    <div key={txn._id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50/50 transition-colors">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-gray-900">{txn.orderRef || txn.orderId}</span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                            In Operator Vault
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-gray-400 mt-1">
+                          Delivery Partner: <span className="text-gray-700 font-semibold">{txn.riderId?.name || "Rider"}</span> • {new Date(txn.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-sm font-bold text-gray-900">₹{txn.actualAmount || txn.amount}</span>
+                        <span className="text-[10px] text-gray-400 block">Collected in Cash</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))
@@ -499,6 +701,69 @@ const OperatorSettlements: React.FC = () => {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      
+      {/* SETTLE TO MERCHANT MODAL */}
+      {settlingMerchant && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Wallet className="text-emerald-600" size={20} />
+                <h3 className="font-bold text-gray-900 text-sm">Settle Cash to Merchant</h3>
+              </div>
+              <button onClick={() => setSettlingMerchant(null)} className="text-gray-400 hover:text-gray-600">
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="bg-emerald-50 p-3 rounded-xl space-y-1 text-xs text-emerald-800">
+              <p className="font-bold">{settlingMerchant.merchantName}</p>
+              <p>Total Orders to Settle: {settlingMerchant.transactions.length}</p>
+              <p className="text-base font-extrabold mt-1">Settlement Amount: ₹{settlingMerchant.totalAmount.toLocaleString("en-IN")}</p>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-gray-500 uppercase">Settlement Note (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g. Handed cash directly to hotel owner / cashier"
+                value={settleNote}
+                onChange={(e) => setSettleNote(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-emerald-600"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setSettlingMerchant(null)}
+                className="px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-xl text-xs font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmSettleToMerchant}
+                disabled={submittingSettle}
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {submittingSettle ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 size={14} />
+                    <span>Confirm Settlement (₹{settlingMerchant.totalAmount.toLocaleString("en-IN")})</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
